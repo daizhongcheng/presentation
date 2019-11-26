@@ -1,6 +1,8 @@
 \documentclass[10pt]{beamer}
 \usepackage{amsmath}
 \usepackage{mathdots}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
 \usetheme[progressbar=frametitle]{metropolis}
 \usepackage{booktabs}
 \usepackage[scale=2]{ccicons}
@@ -71,7 +73,6 @@
  	 \end{itemize}  
  	 \end{exampleblock}
 \end{frame}
-
 \begin{frame}{Motivation and solution}
 \begin{exampleblock}{Motivation}
       \begin{itemize}
@@ -87,14 +88,7 @@
  	 \end{exampleblock}
 
 \end{frame}
-
-
-
-
-
-
 \section{Basic knowledge}
-
 \begin{frame}{Data}
 The data set $\textbf{y}$ is given, which has $n_1$ normal data and $n_2$
 faulty data
@@ -113,8 +107,6 @@ Where $n_1 + n_2 = N$
 \end{equation}
 Where $\textbf{m}$ is the dimension of the output data. % it is also called "degrees of freedom" in $T^2$ distribution.
 \end{frame}
-
-
 \begin{frame}{$T^2$-statistic}
     \begin{columns}
         \begin{column}{0.5\textwidth}
@@ -146,7 +138,6 @@ Where $\textbf{m}$ is the dimension of the output data. % it is also called "deg
         \end{column}
     \end{columns}
 \end{frame}
-
 \begin{frame}{$T^2$-statistic}
 Where i = 1,2 \dots N. 
   $
@@ -162,7 +153,6 @@ Where i = 1,2 \dots N.
   In machine learning, this process can be called feature extraction.
   Feature:$ J_{T^2}(i)$
 \end{frame}
-
 \begin{frame}{Riemannian metric}
     \metroset{block=fill}
     \begin{exampleblock}{Common Riemannian manifolds}
@@ -173,8 +163,6 @@ Where i = 1,2 \dots N.
     \end{itemize}
     \end{exampleblock}
 \end{frame}
-
-
 \begin{frame}{Geometry of SPD Matrices}
 An n $\times$ n square matrix M is SPD matrix, if and only if
 \begin{itemize}
@@ -187,14 +175,17 @@ SPD matrices have the following properties:
 \item 2. $\forall$ M $\in$ SPD(n), eigenvalues are positive i.e., λ(M) > 0.
 \end{itemize}
 \end{frame}
-
-\begin{frame}
-    \frametitle{Riemannian metric}
+\begin{frame}{Riemannian metric}
     \begin{columns}
-        \begin{column}{0.3\textwidth}
-           some text here some text here some text here some text here some text here
+        \begin{column}{0.5\textwidth}
+          \begin{equation} \nonumber
+          \begin{aligned}
+          &S_i = C^{\frac{1}{2}}logm(C^{-\frac{1}{2}}C_iC^{-\frac{1}{2}})C^{\frac{1}{2}} \\
+          &C_i = C^{\frac{1}{2}}expm(C^{-\frac{1}{2}}S_iC^{-\frac{1}{2}})C^{\frac{1}{2}} \\
+          \end{aligned}
+           \end{equation}
         \end{column}
-        \begin{column}{0.7\textwidth}  %%<--- here
+        \begin{column}{0.5\textwidth}  %%<--- here
             \begin{figure}[!htb] 
                 \centering 
                 \includegraphics[width=0.7\textwidth]{RieDis.png}
@@ -203,18 +194,94 @@ SPD matrices have the following properties:
         \end{column}
     \end{columns}
 \end{frame}
-
 \begin{frame}{Riemannian distance}
     \begin{equation}
-R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}
+R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_{i=1}^mlog^2\lambda_i  \right)^\frac{1}{2}
     \end{equation} 
+    where $\norm{.}_F$ is the Frobenius norm, and $\lambda_i$'s are the eigenvalues  of $ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}$
+    \begin{equation}
+        R_d(A^TC_1A,A^TC_2A)=R_d(C_1,C2)
+    \end{equation}
+    This is a very important property
 \end{frame}
-
-
-
-
+\begin{frame}{Riemannian distance}
+   \begin{columns}
+        \begin{column}{0.5\textwidth}
+            the steps of Riemannian distance:
+      \begin{itemize}
+      \item \textcolor{blue}{S1}:   SPD matrix
+      \item \textcolor{blue}{S2}:  Karcher mean
+      \item \textcolor{blue}{S3}:  Riemannian distance
+ 	 \end{itemize}  
+        \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+               \begin{equation}
+              S = y(i)y(i)^T
+               \end{equation}
+                \begin{equation}
+                  J_R(S,X) =  \left(  \sum_{i=1}^mlog^2\lambda_i  \right)^\frac{1}{2}
+                \end{equation}
+                
+        \end{column}
+    \end{columns}
+\end{frame}
 \begin{frame}{Support Vector Machine}
-
+ \begin{columns}
+        \begin{column}{0.5\textwidth}
+           
+        \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+            \begin{figure}[!htb] 
+                \centering 
+                \begin{tikzpicture}[scale = 0.7]
+  % Draw axes
+  \draw [thick] (0,5) node (yaxis) [above] {$J_R$}
+        |-(5,0) node (xaxis) [right] {$J_{T^2}$};
+  % draw line
+  \draw (0,-1) -- (5,4); % y=x-1
+  \draw[dashed] (-1,0) -- (4,5); % y=x+1
+  \draw[dashed] (1,-2) -- (6,3); % y=x-3
+  % \draw labels
+  \draw (3.5,3) node[rotate=45,font=\small] 
+        {$\mathbf{w}^T \mathbf{x} + b = 0$};
+  \draw (2.5,4) node[rotate=45,font=\small] 
+        {$\mathbf{w}^T \mathbf{x} + b = 1$};
+  \draw (4.5,2) node[rotate=45,font=\small] 
+        {$\mathbf{w}^T \mathbf{x} + b = -1$};
+  % draw distance
+  \draw[dotted] (4,5) -- (6,3);
+  \draw (5.25,4.25) node[rotate=-45] {$\frac{2}{\Vert \mathbf{w} \Vert}$};
+  \draw[dotted] (0,0) -- (0.5,-0.5);
+  \draw (0,-0.5) node[rotate=-45] {$\frac{b}{\Vert \mathbf{w} \Vert}$};
+  \draw [->] (2,1) -- (1.5,1.5);
+  \draw (1.85,1.35) node[rotate=-45] {$\mathbf{w}$};
+  % draw negative dots
+  \fill[red] (0.5,1.5) circle (3pt);
+  \fill[red]   (1.5,2.5)   circle (3pt);
+  \fill[black] (1,2.5)     circle (3pt);
+  \fill[black] (0.75,2)    circle (3pt);
+  \fill[black] (0.6,1.9)   circle (3pt);
+  \fill[black] (0.77, 2.5) circle (3pt);
+  \fill[black] (1.5,3)     circle (3pt);
+  \fill[black] (1.3,3.3)   circle (3pt);
+  \fill[black] (0.6,3.2)   circle (3pt);
+  \fill[black] (0.5,1)     circle (3pt);
+  \fill[black] (2,0.5)     circle (3pt);
+  % draw positive dots
+  \draw[red,thick] (4,1)     circle (3pt); 
+  \draw[red,thick] (3.3,.3)  circle (3pt); 
+  \draw[black]     (4.5,1.2) circle (3pt); 
+  \draw[black]     (4.5,.5)  circle (3pt); 
+  \draw[black]     (3.9,.7)  circle (3pt); 
+  \draw[black]     (5,1)     circle (3pt); 
+  \draw[black]     (3.5,.2)  circle (3pt); 
+  \draw[black]     (4,.3)    circle (3pt); 
+  \draw[black]     (3,1.5)   circle (3pt);
+  \draw[black]     (2,2)     circle (3pt);
+\end{tikzpicture}
+            \end{figure}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 
