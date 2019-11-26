@@ -1,0 +1,257 @@
+\documentclass[10pt]{beamer}
+\usepackage{amsmath}
+\usepackage{mathdots}
+\usetheme[progressbar=frametitle]{metropolis}
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{pgfplots}
+\usepackage{amsmath}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\usepgfplotslibrary{dateplot}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+ 
+\urlstyle{same}
+
+\usepackage{xspace}
+\newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
+
+\title{A Fault Detection method based on SVM technique with $T^2$-Statistic and Riemannian metric}
+%\subtitle{going beyond IF and Scopus index (v2.0)}
+\author{Zhongcheng Dai  \\
+ Supervisor: M.Sc. Han Yu 
+}
+ \date{30 November 2019}
+\institute{Automatic Control and Complex Systems}
+\titlegraphic{\hfill\includegraphics[height=1cm]{logo_ITB}}
+\begin{document}
+\maketitle
+\begin{frame}{contents}
+  \setbeamertemplate{section in toc}[sections numbered]
+  \tableofcontents[hideallsubsections]
+\end{frame}
+\section{Introduction}
+\begin{frame}{Background}
+\metroset{block=fill}
+    \begin{exampleblock}{Traditional methods}
+	\begin{itemize}
+    \item $T^2$-statistic
+    \item Q-statistic
+    \item Kullback-Leibler divergence
+    \item The Wishart distribution-based methods
+    \item \dots \dots
+    \end{itemize}
+    \end{exampleblock}
+\end{frame}
+\begin{frame}{Background}
+ A brief summary of the steps:
+      \begin{itemize}
+      \item \textcolor{blue}{S1}: collect sufficient fault-free data
+      \item \textcolor{blue}{S2}: offline train to determine the threshold
+      \item \textcolor{blue}{S3}: use the threshold to check the new data
+ 	 \end{itemize}  
+\end{frame}
+\begin{frame}{Background}
+ \begin{exampleblock}{merits of the traditional methods}
+	\begin{itemize}
+    \item The detection performance for additive faults is practical
+    \item Online calculations are small, only need to compare threshold
+    \end{itemize}
+    \end{exampleblock}
+\end{frame}
+\begin{frame}{Background}
+\begin{exampleblock}{Drawbacks of traditional methods}
+      \begin{itemize}
+      \item The detection performance for multiplicative faults is unqualified
+      \item Unrecognized case where the variance becomes smaller
+ 	 \end{itemize}  
+ 	 \end{exampleblock}
+\end{frame}
+
+\begin{frame}{Motivation and solution}
+\begin{exampleblock}{Motivation}
+      \begin{itemize}
+      \item Eliminate the shortcomings of traditional methods
+      \item Enhance the fault detection performance
+ 	 \end{itemize}  
+ 	 \end{exampleblock}
+ \begin{exampleblock}{Solution}
+      \begin{itemize}
+      \item $T^2$-statistic and Riemannian metric
+      \item Support Vector Machine
+ 	 \end{itemize}  
+ 	 \end{exampleblock}
+
+\end{frame}
+
+
+
+
+
+
+\section{Basic knowledge}
+
+\begin{frame}{Data}
+The data set $\textbf{y}$ is given, which has $n_1$ normal data and $n_2$
+faulty data
+\begin{equation}
+   y = [y_1 \ y_2 \ \dots y_{n_1} \ y_{n_1+1} \ y_{n_1+2} \ \dots y_{n_1+n_2}] 
+\end{equation}
+Where $n_1 + n_2 = N$
+\begin{equation}
+    y(i) = 
+    \begin{pmatrix}
+        y_1(i) \\
+        y_2(i) \\
+       \vdots  \\
+        y_m(i) \\ 
+    \end{pmatrix}
+\end{equation}
+Where $\textbf{m}$ is the dimension of the output data. % it is also called "degrees of freedom" in $T^2$ distribution.
+\end{frame}
+
+
+\begin{frame}{$T^2$-statistic}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            the steps of $T^2$-statistic:
+      \begin{itemize}
+      \item \textcolor{blue}{S1}: computing the mean
+      \item \textcolor{blue}{S2}: computing the variance
+      \item \textcolor{blue}{S3}: Normalizing the data
+      \item \textcolor{blue}{S4}: computing the  covariance
+      \item \textcolor{blue}{S5}: computing the value of evaluation function
+ 	 \end{itemize}  
+        \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+               \begin{equation}
+               E(y) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}y(i) 
+               \end{equation}
+                \begin{equation}
+                   \sigma^2 \approx \frac{1}{n_1-1}\sum_{i=1}^{n_1}y^2(i) 
+                \end{equation}
+                \begin{equation}
+                Y = \sigma^{-1}(y-E(y))
+                \end{equation}
+                \begin{equation}
+                \Sigma_y \approx \frac{YY^T}{N-1}
+                \end{equation}
+                \begin{equation}
+                       J_{T^2}(i) = y_i^T\Sigma_y^{-1}y_i
+                \end{equation}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{$T^2$-statistic}
+Where i = 1,2 \dots N. 
+  $
+                \sigma^{-1} \approx
+                \begin{bmatrix}
+                \sigma_1^{-1} &&&0\\
+                &  \sigma_2^{-1} && \\
+                && \ddots & \\
+                0&&& \sigma_m{-1}
+                \end{bmatrix}
+  $ 
+  \par
+  In machine learning, this process can be called feature extraction.
+  Feature:$ J_{T^2}(i)$
+\end{frame}
+
+\begin{frame}{Riemannian metric}
+    \metroset{block=fill}
+    \begin{exampleblock}{Common Riemannian manifolds}
+	\begin{itemize}
+    \item \textcolor{red}{symmetric positive definite (SPD) matrix manifolds}
+    \item Grassmann manifolds
+    \item Stiefel manifolds
+    \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+
+\begin{frame}{Geometry of SPD Matrices}
+An n $\times$ n square matrix M is SPD matrix, if and only if
+\begin{itemize}
+    \item $M^T = M$
+    \item $u^TMu>0$ and $\forall u \neq 0$
+\end{itemize}
+SPD matrices have the following properties:
+\begin{itemize}
+\item 1. $\forall$ M $\in$ SPD(n), $M^{-1}$ $\in$ SPD(n) i.e., SPD matrices are invertible. 
+\item 2. $\forall$ M $\in$ SPD(n), eigenvalues are positive i.e., λ(M) > 0.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Riemannian metric}
+    \begin{columns}
+        \begin{column}{0.3\textwidth}
+           some text here some text here some text here some text here some text here
+        \end{column}
+        \begin{column}{0.7\textwidth}  %%<--- here
+            \begin{figure}[!htb] 
+                \centering 
+                \includegraphics[width=0.7\textwidth]{RieDis.png}
+                \caption{\href{https://www.mdpi.com/1424-8220/19/2/379}{Riemannian mainfold}} 
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Riemannian distance}
+    \begin{equation}
+R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}
+    \end{equation} 
+\end{frame}
+
+
+
+
+\begin{frame}{Support Vector Machine}
+
+\end{frame}
+
+
+\section{The Algorithm to find the the threshold}
+
+
+\begin{frame}{Riemannian metric}
+\end{frame}
+
+
+\section{Benchmark study}
+
+\begin{frame}{algorithm}
+    
+\end{frame}
+
+
+
+\section{Conclusions and future work}
+
+\begin{frame}{take home notes}
+
+\begin{center}science is about:\end{center}
+
+\begin{center}
+\begin{enumerate}
+	\item \textcolor{blue}{honesty} in researching the problem
+	\item \textcolor{blue}{bravery} in publishing the results 
+    \item \textcolor{blue}{big heart} in getting feedback 
+\end{enumerate}
+\end{center}
+\end{frame}
+
+\begin{frame}[standout]
+\begin{center}
+Thank you for your attention!
+\end{center}
+\end{frame}
+
+\end{document}
