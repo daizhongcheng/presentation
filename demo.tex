@@ -583,21 +583,23 @@ Case 1: $Pr(D=1|f=0) > \alpha$
     \end{exampleblock}
 \end{frame}
 \begin{frame}{Generating the data}
-\begin{tabular}
+\begin{center}
+\begin{tabular}{ccc}
 \hline
-y& number& Distribution\\
+y& number& Distribution                                    \\
 \hline
 $y_n  $ &$n_1$& $y_n \sim N(\mu, \sigma^2)$                \\
 $y_a  $ &$n_2$& $y_{a_i} \sim N(\mu_i,\sigma^2$)           \\
-$y_m  $ &$n_3$& $y_{m_i} \sim N(\mu,\sigma_i^2)$           \\
-$y_{am}$&$n_4$& $y_{am_i}\sim N(\mu_i,\sigma_i^2)$         \\
+$y_m  $ &$n_3$& $y_{m_j} \sim N(\mu,\sigma_j^2)$           \\
+$y_{am}$&$n_4$& $y_{am_k}\sim N(\mu_k,\sigma_k^2)$         \\
+$y_{ms}$ &$n_5$& $y_{ms_l} \sim N(\mu,\sigma_l^2)$  \\
 \hline
 \end{tabular}
-where $\mu \neq \mu_i,\sigma \neq \sigma_i$, every p samples as a group
-$y_{a_i},y_{m_i},y_{am_i}$
+\end{center}
+where $\mu \neq \mu_i,\mu \neq \mu_j,\mu \neq \mu_k,\sigma \neq \sigma_i,\sigma < \sigma_j,\sigma \neq \sigma_k,\sigma > \sigma_l$. \par Every p samples as a group
+$y_{a_i},y_{m_i},y_{am_i}$. \par $i = 1,2,\dots,\frac{n_2}{p},j=1,2,\dots,\frac{n_3}{p}$ \par
+$k = 1,2,\dots,\frac{n_4}{p},l = 1,2,\dots, \frac{n_5}{l}$
 \end{frame}
-
-
 
 \section{Conclusions and future work}
 
