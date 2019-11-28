@@ -57,26 +57,32 @@ Dr. Ing. Chris Louen
  A brief summary of the steps:
       \begin{itemize}
       \item \textcolor{blue}{S1}: collect sufficient fault-free data
-      \item \textcolor{blue}{S2}: offline train to determine the threshold
-      \item \textcolor{blue}{S3}: use the threshold to check the new data
+      \item \textcolor{blue}{S2}: offline training to determine the threshold
+      \item \textcolor{blue}{S3}: online Monitoring  % use the threshold to check the new data
  	 \end{itemize}  
+ Detection logic:
+ \begin{equation}\nonumber
+ \begin{aligned}
+     &J > J_{th} \quad faulty \\
+     &J < J_{th} \quad fault-free \\
+     \end{aligned}
+ \end{equation}
 \end{frame}
 \begin{frame}{Background}
- \begin{exampleblock}{merits of the traditional methods}
+ \begin{exampleblock}{Merits of the traditional methods}
 	\begin{itemize}
-    \item The detection performance for additive faults is practical
-    \item Online calculations are small, only need to compare threshold
+    \item The detection performance for additive faults is satisfactory
+    \item less computational cost(threshold and Online monitoring)
     \end{itemize}
     \end{exampleblock}
-\end{frame}
-\begin{frame}{Background}
-\begin{exampleblock}{Drawbacks of traditional methods}
+    \begin{exampleblock}{Drawbacks of traditional methods}
       \begin{itemize}
       \item The detection performance for multiplicative faults is unqualified
       \item Unrecognized case where the variance becomes smaller
  	 \end{itemize}  
  	 \end{exampleblock}
 \end{frame}
+
 \begin{frame}{Motivation and solution}
 \begin{exampleblock}{Motivation}
       \begin{itemize}
@@ -92,7 +98,7 @@ Dr. Ing. Chris Louen
  	 \end{exampleblock}
 
 \end{frame}
-\section{Basic knowledge}
+\section{Calculation of monitoring index}
 \begin{frame}{Data}
 The data set $\textbf{y}$ is given, which has $n_1$ normal data and $n_2$
 faulty data
@@ -109,7 +115,7 @@ Where $n_1 + n_2 = N$
         y_m(i) \\ 
     \end{pmatrix}
 \end{equation}
-Where $\textbf{m}$ is the dimension of the output data. % it is also called "degrees of freedom" in $T^2$ distribution.
+Where $\textbf{m}$ is the dimension of the output data. It is also called  degrees of freedom. % it is also called "degrees of freedom" in $T^2$ distribution.
 \end{frame}
 \begin{frame}{$T^2$-statistic}
     \begin{columns}
@@ -118,26 +124,30 @@ Where $\textbf{m}$ is the dimension of the output data. % it is also called "deg
       \begin{itemize}
       \item \textcolor{blue}{S1}: computing the mean
       \item \textcolor{blue}{S2}: computing the variance
-      \item \textcolor{blue}{S3}: Normalizing the data
+      \item \textcolor{blue}{S3}: normalizing the data
       \item \textcolor{blue}{S4}: computing the  covariance
       \item \textcolor{blue}{S5}: computing the value of evaluation function
+      \item \textcolor{blue}{S6}: Monitoring index
  	 \end{itemize}  
         \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
-               \begin{equation}
-               E(y) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}y(i) 
-               \end{equation}
-                \begin{equation}
-                   \sigma^2 \approx \frac{1}{n_1-1}\sum_{i=1}^{n_1}y^2(i) 
-                \end{equation}
-                \begin{equation}
-                Y = \sigma^{-1}(y-E(y))
-                \end{equation}
-                \begin{equation}
-                \Sigma_y \approx \frac{YY^T}{N-1}
-                \end{equation}
-                \begin{equation}
-                       J_{T^2}(i) = y_i^T\Sigma_y^{-1}y_i
+      \begin{equation} \nonumber
+               \begin{aligned}
+                    E(y) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}y(i)   \\
+                   \sigma^2 \approx \frac{1}{n_1-1}\sum_{i=1}^{n_1}y^2(i) \\
+                    Y = \sigma^{-1}(y-E(y)) \\
+                   \Sigma_y \approx \frac{YY^T}{N-1} \\
+                   J_{T^2}(i) = y_i^T\Sigma_y^{-1}y_i \\
+             \end{aligned}
+     \end{equation}
+      \begin{equation} 
+                  J_{T^2} =  \begin{bmatrix}
+                          J_{T^2}(1) \\
+                          J_{T^2}(2) \\
+                          \vdots      \\
+                           J_{T^2}(N)
+                         \end{bmatrix}
+                         \label{Jt}
                 \end{equation}
         \end{column}
     \end{columns}
@@ -168,7 +178,7 @@ Where i = 1,2 \dots N.
     \end{exampleblock}
 \end{frame}
 \begin{frame}{Geometry of SPD Matrices}
-An n $\times$ n square matrix M is SPD matrix, if and only if
+An n $\times$ n square matrix M is SPD, if and only if
 \begin{itemize}
     \item $M^T = M$
     \item $u^TMu>0$ and $\forall u \neq 0$
@@ -208,7 +218,7 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
     \end{equation}
     This is a very important property
 \end{frame}
-\begin{frame}{Riemannian distance}
+\begin{frame}{Riemannian distance as monitoring index}
    \begin{columns}
         \begin{column}{0.5\textwidth}
             the steps of Riemannian distance:
@@ -216,6 +226,7 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
       \item \textcolor{blue}{S1}:   SPD matrix
       \item \textcolor{blue}{S2}:  Karcher mean
       \item \textcolor{blue}{S3}:  Riemannian distance
+      \item  \textcolor{blue}{S4}:  Monitoring index
  	 \end{itemize}  
         \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
@@ -225,7 +236,15 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
                 \begin{equation}
                   J_R(S_i,X) =  \left(  \sum_{i=1}^mlog^2\lambda_i  \right)^\frac{1}{2}
                 \end{equation}
-                
+                 \begin{equation}
+                  J_R =  \begin{bmatrix}
+                          J_R(S_1,X) \\
+                          J_R(S_2,X) \\
+                          \vdots     \\
+                           J_R(S_N,X)
+                         \end{bmatrix}
+                         \label{Jr}
+                \end{equation}
         \end{column}
     \end{columns}
 \end{frame}
@@ -235,8 +254,8 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
            \begin{equation} \nonumber
            \begin{aligned}
                x = \begin{bmatrix}
-                   J_{T^2} \\
-                   J_R   \\
+                   J_{T^2}^T \\
+                   J_R^T \\
                    \end{bmatrix} \\
                    w = \begin{bmatrix}
                         w_1 \\
@@ -246,13 +265,13 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
            \end{equation}
            Task: find (w,b) to maximize $\frac{2}{\norm{w}}$
            \begin{equation} \nonumber
-           D = sgn(w^Tx+b) = 
+           D = sgn(w^Tx_i+b) = 
            \left\{  \begin{aligned} -1 \quad f = 0  \\
                                      1 \quad f \neq 0  \\   
                     \end{aligned}   
            \right.
            \end{equation}
-           D is the dicision function.
+           where D is the dicision function,$x_i:=x(:,i)$.
         \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
             \begin{figure}[!htb] 
@@ -398,7 +417,7 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
 
 
 
-\section{The Algorithm to find the the threshold}
+\section{The algorithm to find the threshold}
 
 
 \begin{frame}{SMO algorithm}
@@ -565,19 +584,19 @@ Case 1: $Pr(D=1|f=0) > \alpha$
 \section{Benchmark study}
 \begin{frame}{Generating the data}
     $y = y + f, \left\{ \begin{aligned}
-    f = 0      \quad &fault-free \\
+    f = 0      \quad &\text{fault-free} \\
     f \neq 0   \quad &\text{additive faults}
      \end{aligned} 
      \right. $
    $y = My,\left\{ \begin{aligned}
-    M = Id     \quad &fault-free \\
+    M = Id     \quad &\text{fault-free} \\
     f \neq Id   \quad &\text{multiplicative faults}
      \end{aligned} 
      \right. $
      \metroset{block=fill}
       \begin{exampleblock}{Relation}
 	\begin{itemize}
-    \item Changes in averages can be mapped to additive faults
+    \item Changes in mean can be mapped to additive faults
     \item Changes in variance can be mapped to multiplicative faults
     \end{itemize}
     \end{exampleblock}
@@ -626,7 +645,7 @@ $k = 1,2,\dots,\frac{n_4}{p},l = 1,2,\dots, \frac{n_5}{l}$
 For case 1: \par  $\small{w^T = [ 0.4106 \quad -0.6689]
  , b = -3.473} $\par $\small{\alpha \approx 0.047\%,\beta  \approx  99.9\%,VA \approx 99.93\%}$ \par 
 For case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
- , b = -0.8336} $\par $\small{\alpha \approx 0.33\%  ,\beta  \approx  98.8 \,VA = \approx 89.83 \%}$ \par
+ , b = -0.8336} $\par $\small{\alpha \approx 0.33\%  ,\beta  \approx  98.8 \%,VA = \approx 89.83 \%}$ \par
  where VA is validation accuracy.
            \end{column}
         \begin{column}{0.5\textwidth} 
@@ -722,7 +741,7 @@ $VA \approx 99.99 \% $
 \begin{frame}{Case study on three-tank system(TTS)}
     \begin{columns}
              \begin{column}{0.5\textwidth}
-        $w^T = [0.0481 \quad 5.2780]$, $b = -23.5837$
+        $w^T = [0.0481 \quad 5.2780]$ $b = -23.5837$
     \begin{equation} \nonumber
   \begin{aligned}
    & FAR \approx \frac{14}{14+882331} \approx 1.5867\times 10^{-3} \% \\
@@ -768,9 +787,9 @@ $VA \approx 99.99 \% $
         \end{column}
     \end{columns}
 \end{frame}
-\section{Conclusions and future work}
+\section{Conclusion and future work}
 
-\begin{frame}{Conclusions}
+\begin{frame}{Conclusion}
  \metroset{block=fill}
     \begin{exampleblock}{Advantage}
 	\begin{itemize}
@@ -790,9 +809,9 @@ $VA \approx 99.99 \% $
 \end{frame}
 \begin{frame}{Future work}
       \begin{itemize}
-      \item \textcolor{blue}{1}: Combine other FD methods using SVM
-      \item \textcolor{blue}{2}: Random algorithms to find the threshold of two-dimensional data or the threshold of three-dimensional data.
-      \item \textcolor{blue}{3}: 
+      \item \textcolor{blue}{1}: Combine 3 FD methods using SVM
+        \item \textcolor{blue}{2}: determine the decision function by the degree of freedom and the variance of the data
+      \item \textcolor{blue}{3}: Random algorithms to find the threshold of two-dimensional data or the threshold of three-dimensional data
  	 \end{itemize}  
 \end{frame}
 
@@ -801,4 +820,6 @@ $VA \approx 99.99 \% $
 Thank you for your attention!
 \end{center}
 \end{frame}
+
+\section{Appendix}
 \end{document}
