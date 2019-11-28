@@ -679,21 +679,90 @@ For case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
 \end{frame}
 \begin{frame}{Case study on a numerical example}
      \begin{columns}
-             \begin{column}{0.6\textwidth}
+             \begin{column}{0.5\textwidth}
        For case 4: \par
-     $\small{w^T = [ 0.8847 \quad 0.0007]
- , b =-6.3180 } $\par $\small{\alpha  \approx 0\%,\beta  \approx 99.99 \% ,VA \approx}99.99 \% $
+     $\scriptsize{w^T = [ 0.8847 \quad 0.0007]
+ , b =-6.3180 } $\par $\scriptsize{\alpha  \approx 0\%,\beta  \approx 99.99 \% ,VA \approx 99.99} \% $ \par 
  For case 5: \par 
-   $\small{w^T = [0.0481 \quad 5.2780]
- , b = -23.5837} $\par $\small{\alpha  \approx 3.3333\times 10^{-3} \%,\beta  \approx 99.97\% ,VA \approx}99.99 \% $
+   $\scriptsize{w^T = [0.0481 \quad 5.2780]
+ , b = -23.5837} $\par $\scriptsize{\alpha  \approx 3.3333\times 10^{-3} \%,\beta  \approx 99.97\% }$ \par 
+$VA \approx 99.99 \% $
            \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
     \begin{figure}
         \centering
         \includegraphics[width=4cm]{fig/Cu3.eps}
-        \caption{$y_n,y_a,y_m,y_{am}$ data(case 4)}
+        \caption{$y_n,y_a,y_m,y_{am}$ (case 4)}
         \includegraphics[width=4cm]{fig/miniVarP.eps}
-        \caption{ $y_n,y_a,y_{m},y_{am},y_{ms}$ data(case 5)}
+        \caption{ $y_n,y_a,y_{m},y_{am},y_{ms}$ (case 5)}
+        \end{figure}
+  
+        \end{column}
+    \end{columns}
+\end{frame}
+\begin{frame}{Case study on a numerical example}
+     \begin{columns}
+             \begin{column}{0.5\textwidth}
+              \begin{figure}
+              \centering
+           \includegraphics[width=5cm]{fig/perfectR.eps}
+            \end{figure}
+           \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+   \begin{figure}
+        \centering
+        \includegraphics[width=3cm]{fig/Coriginal.eps} \\
+        \includegraphics[width=3cm]{fig/thresholdT.eps} \\
+        \includegraphics[width=3cm]{fig/miniVarP.eps}
+        \end{figure}
+  
+        \end{column}
+    \end{columns}
+\end{frame}
+\begin{frame}{Case study on three-tank system(TTS)}
+    \begin{columns}
+             \begin{column}{0.5\textwidth}
+        $w^T = [0.0481 \quad 5.2780]$, $b = -23.5837$
+    \begin{equation} \nonumber
+  \begin{aligned}
+   & FAR \approx \frac{14}{14+882331} \approx 1.5867\times 10^{-3} \% \\
+   & FDR \approx 1 - \frac{48651}{48651+933651} \approx 95.05 \% \\
+   & VA \approx 1 - \frac{48651+14}{933651+882331} \approx 97.32 \% 
+  \end{aligned}
+\end{equation}
+           \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+   \begin{figure}
+        \centering
+        \includegraphics[width=4cm]{fig/realori.eps}
+        \caption{real data from TTS}
+        \includegraphics[width=4cm]{fig/realdata.eps}
+        \caption{The hyperplane of the data}
+        \end{figure}
+  
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Case study on continuous stirred tank heater(CSTH)}
+     \begin{columns}
+             \begin{column}{0.5\textwidth}
+ $w^T = [0.1775 \quad 2.2058]$,$b = -7.1464$
+\begin{equation} \nonumber
+  \begin{aligned}
+   & FAR \approx \frac{1}{1+1142} \approx  8.7489\times 10^{-2} \% \\
+   & FDR \approx 1 - \frac{0}{0+2743} \approx 100 \% \\
+   & VA \approx 1 - \frac{1+0}{1143+2743} \approx 99.97 \% 
+  \end{aligned}
+\end{equation}
+           \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+   \begin{figure}
+        \centering
+        \includegraphics[width=4cm]{fig/csthrealdata.eps}
+        \caption{real data from CSTH}
+        \includegraphics[width=4cm]{fig/Csthboundary.eps}
+        \caption{The hyperplane of the data}
         \end{figure}
   
         \end{column}
@@ -701,17 +770,30 @@ For case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
 \end{frame}
 \section{Conclusions and future work}
 
-\begin{frame}{take home notes}
-
-\begin{center}science is about:\end{center}
-
-\begin{center}
-\begin{enumerate}
-	\item \textcolor{blue}{honesty} in researching the problem
-	\item \textcolor{blue}{bravery} in publishing the results 
-    \item \textcolor{blue}{big heart} in getting feedback 
-\end{enumerate}
-\end{center}
+\begin{frame}{Conclusions}
+ \metroset{block=fill}
+    \begin{exampleblock}{Advantage}
+	\begin{itemize}
+    \item Different faults are distributed in different areas
+    \item A satisfactory fault detection performance(sufficient data)
+    \item Ability to detect when the variance becomes smaller
+    \end{itemize}
+    \end{exampleblock}
+    
+     \metroset{block=fill}
+    \begin{exampleblock}{Disadvantage}
+	\begin{itemize}
+    \item Need a lot of data
+    \item Offline training requires a lot of calculations
+    \end{itemize}
+    \end{exampleblock}
+\end{frame}
+\begin{frame}{Future work}
+      \begin{itemize}
+      \item \textcolor{blue}{1}: Combine other FD methods using SVM
+      \item \textcolor{blue}{2}: Random algorithms to find the threshold of two-dimensional data or the threshold of three-dimensional data.
+      \item \textcolor{blue}{3}: 
+ 	 \end{itemize}  
 \end{frame}
 
 \begin{frame}[standout]
