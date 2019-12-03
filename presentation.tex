@@ -7,7 +7,7 @@
 \usetikzlibrary{arrows}
 \usetheme[progressbar=frametitle]{metropolis}
 \usepackage{booktabs}
-\usepackage[scale=2]{ccicons}
+\usepackage[scale=1]{ccicons}
 \usepackage{pgfplots}
 \usepackage{amsmath}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
@@ -58,13 +58,13 @@ Dr. Ing. Chris Louen
       \begin{itemize}
       \item \textcolor{blue}{S1}: collect sufficient fault-free data
       \item \textcolor{blue}{S2}: offline training to determine the threshold
-      \item \textcolor{blue}{S3}: online Monitoring  % use the threshold to check the new data
+      \item \textcolor{blue}{S3}: online monitoring  % use the threshold to check the new data
  	 \end{itemize}  
  Detection logic:
  \begin{equation}\nonumber
  \begin{aligned}
      &J > J_{th} \quad faulty \\
-     &J < J_{th} \quad fault-free \\
+     &J \leq J_{th} \quad fault-free \\
      \end{aligned}
  \end{equation}
 \end{frame}
@@ -72,7 +72,7 @@ Dr. Ing. Chris Louen
  \begin{exampleblock}{Merits of the traditional methods}
 	\begin{itemize}
     \item The detection performance for additive faults is satisfactory
-    \item less computational cost(threshold and Online monitoring)
+    \item low computational cost(threshold and Online monitoring)
     \end{itemize}
     \end{exampleblock}
     \begin{exampleblock}{Drawbacks of traditional methods}
@@ -96,7 +96,6 @@ Dr. Ing. Chris Louen
       \item Support Vector Machine
  	 \end{itemize}  
  	 \end{exampleblock}
-
 \end{frame}
 \section{Calculation of monitoring index}
 \begin{frame}{Data}
@@ -105,42 +104,53 @@ faulty data
 \begin{equation}
    y = [y_1 \ y_2 \ \dots y_{n_1} \ y_{n_1+1} \ y_{n_1+2} \ \dots y_{n_1+n_2}] 
 \end{equation}
-Where $n_1 + n_2 = N$
+Where $n_1 + n_2 = N, y \in R^{m\times N}$
 \begin{equation}
-    y(i) = 
+    y_i = 
     \begin{pmatrix}
-        y_1(i) \\
-        y_2(i) \\
+        y_i(1) \\
+        y_i(2) \\
        \vdots  \\
-        y_m(i) \\ 
+        y_i(m) \\ 
     \end{pmatrix}
 \end{equation}
 Where $\textbf{m}$ is the dimension of the output data. It is also called  degrees of freedom. % it is also called "degrees of freedom" in $T^2$ distribution.
 \end{frame}
-\begin{frame}{$T^2$-statistic}
+\begin{frame}{$T^2$-statistic as monitoring index}
     \begin{columns}
         \begin{column}{0.5\textwidth}
-            the steps of $T^2$-statistic:
+            the steps: %of $T^2$-statistic:
       \begin{itemize}
-      \item \textcolor{blue}{S1}: computing the mean
+      \item \textcolor{blue}{S1}: computing the mean \\
       \item \textcolor{blue}{S2}: computing the variance
       \item \textcolor{blue}{S3}: normalizing the data
       \item \textcolor{blue}{S4}: computing the  covariance
       \item \textcolor{blue}{S5}: computing the value of evaluation function
       \item \textcolor{blue}{S6}: Monitoring index
  	 \end{itemize}  
+ 	 Where 
+  $
+                \sigma^{-1} \approx
+                \begin{bmatrix}
+                \sigma_1^{-1} &&&0\\
+                &  \sigma_2^{-1} && \\
+                && \ddots & \\
+                0&&& \sigma_m{-1}
+                \end{bmatrix}
+  $ 
         \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
       \begin{equation} \nonumber
                \begin{aligned}
-                    E(y) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}y(i)   \\
-                   \sigma^2 \approx \frac{1}{n_1-1}\sum_{i=1}^{n_1}y^2(i) \\
-                    Y = \sigma^{-1}(y-E(y)) \\
-                   \Sigma_y \approx \frac{YY^T}{N-1} \\
-                   J_{T^2}(i) = y_i^T\Sigma_y^{-1}y_i \\
+                  & E(y) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}y_i  \\
+                  & \sigma^2 \approx \frac{1}{n_1-1}\sum_{i=1}^{n_1}y_i^2 \\
+                  &  Y_i = \sigma^{-1}(y_i-E(y)) \quad i = 1\dots N \\
+                  &  N_y = [Y_1 \dots Y_{n_1}] \\
+                  & \Sigma_y \approx \frac{N_yN_y^T}{n_1-1} \\
+                  & J_{T^2}(i) = Y_i^T\Sigma_y^{-1}Y_i \quad i = 1\dots N\\  
              \end{aligned}
      \end{equation}
-      \begin{equation} 
+      \begin{equation} \nonumber
                   J_{T^2} =  \begin{bmatrix}
                           J_{T^2}(1) \\
                           J_{T^2}(2) \\
@@ -152,21 +162,6 @@ Where $\textbf{m}$ is the dimension of the output data. It is also called  degre
         \end{column}
     \end{columns}
 \end{frame}
-\begin{frame}{$T^2$-statistic}
-Where i = 1,2 \dots N. 
-  $
-                \sigma^{-1} \approx
-                \begin{bmatrix}
-                \sigma_1^{-1} &&&0\\
-                &  \sigma_2^{-1} && \\
-                && \ddots & \\
-                0&&& \sigma_m{-1}
-                \end{bmatrix}
-  $ 
-  \par
-  In machine learning, this process can be called feature extraction.
-  Feature:$ J_{T^2}(i)$
-\end{frame}
 \begin{frame}{Riemannian metric}
     \metroset{block=fill}
     \begin{exampleblock}{Common Riemannian manifolds}
@@ -177,38 +172,13 @@ Where i = 1,2 \dots N.
     \end{itemize}
     \end{exampleblock}
 \end{frame}
-\begin{frame}{Geometry of SPD Matrices}
-An n $\times$ n square matrix M is SPD, if and only if
-\begin{itemize}
-    \item $M^T = M$
-    \item $u^TMu>0$ and $\forall u \neq 0$
-\end{itemize}
-SPD matrices have the following properties:
-\begin{itemize}
-\item 1. $\forall$ M $\in$ SPD(n), $M^{-1}$ $\in$ SPD(n) i.e., SPD matrices are invertible. 
-\item 2. $\forall$ M $\in$ SPD(n), eigenvalues are positive i.e., λ(M) > 0.
-\end{itemize}
-\end{frame}
-\begin{frame}{Riemannian metric}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-          \begin{equation} \nonumber
-          \begin{aligned}
-          &S_i = C^{\frac{1}{2}}logm(C^{-\frac{1}{2}}C_iC^{-\frac{1}{2}})C^{\frac{1}{2}} \\
-          &C_i = C^{\frac{1}{2}}expm(C^{-\frac{1}{2}}S_iC^{-\frac{1}{2}})C^{\frac{1}{2}} \\
-          \end{aligned}
-           \end{equation}
-        \end{column}
-        \begin{column}{0.5\textwidth}  %%<--- here
-            \begin{figure}[!htb] 
-                \centering 
-                \includegraphics[width=0.7\textwidth]{RieDis.png}
-                \caption{\href{https://www.mdpi.com/1424-8220/19/2/379}{Riemannian mainfold}} 
-            \end{figure}
-        \end{column}
-    \end{columns}
-\end{frame}
 \begin{frame}{Riemannian distance}
+Find the mean matrix (\textbf{Karcher mean}) $X_{Karcher}$ which satisfies
+    \begin{equation}\sum\limits^{n_1}_{i=1}log(S_i^{-1}X_{Karcher})=0\end{equation}\\
+    by iteration\href{https://www.sciencedirect.com/science/article/pii/S0024379511006616}{[1]}: $
+        X_{k+1}=X_k-L X_k^{\frac{1}{2}}\sum\limits^{n_1}_{i=1}log(X_k^{\frac{1}{2}}S_i^{-1}X_k^{\frac{1}{2}})X_k^{\frac{1}{2}}
+        \label{eq:iteration2} $ 
+
     \begin{equation}
 R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_{i=1}^mlog^2\lambda_i  \right)^\frac{1}{2}
     \end{equation} 
@@ -221,7 +191,7 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
 \begin{frame}{Riemannian distance as monitoring index}
    \begin{columns}
         \begin{column}{0.5\textwidth}
-            the steps of Riemannian distance:
+            the steps:
       \begin{itemize}
       \item \textcolor{blue}{S1}:   SPD matrix
       \item \textcolor{blue}{S2}:  Karcher mean
@@ -229,9 +199,12 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
       \item  \textcolor{blue}{S4}:  Monitoring index
  	 \end{itemize}  
         \end{column}
-        \begin{column}{0.5\textwidth}  %%<--- here
+        \begin{column}{0.6\textwidth}  %%<--- here
                \begin{equation}
-              S_i = y(i)y(i)^T
+              S_i = y_iy_i^T
+               \end{equation}
+               \begin{equation}
+                 X_{k+1}=X_k-L X_k^{\frac{1}{2}}\sum\limits^{n_1}_{i=1}log(X_k^{\frac{1}{2}}S_i^{-1}X_k^{\frac{1}{2}})X_k^{\frac{1}{2}}
                \end{equation}
                 \begin{equation}
                   J_R(S_i,X) =  \left(  \sum_{i=1}^mlog^2\lambda_i  \right)^\frac{1}{2}
@@ -248,12 +221,12 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
         \end{column}
     \end{columns}
 \end{frame}
-\begin{frame}{Support Vector Machine}
+\begin{frame}{Support Vector Machine(hard margin)}
 \begin{columns}
         \begin{column}{0.5\textwidth}
            \begin{equation} \nonumber
            \begin{aligned}
-               x = \begin{bmatrix}
+               J = \begin{bmatrix}
                    J_{T^2}^T \\
                    J_R^T \\
                    \end{bmatrix} \\
@@ -271,7 +244,7 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
                     \end{aligned}   
            \right.
            \end{equation}
-           where D is the dicision function,$x_i:=x(:,i)$.
+           where D is the dicision function, $x_i:=J(:,i)$.
         \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
             \begin{figure}[!htb] 
@@ -326,7 +299,7 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
         \end{column}
     \end{columns}
 \end{frame}
-\begin{frame}{Support Vector Machine}
+\begin{frame}{Support Vector Machine(hard margin)}
     \begin{equation}
   \begin{aligned}
   &\gamma_i =\frac{|\hat{\gamma}_i|}{\sqrt{w^Tw}} = \frac{|w^Tx_i+b|}{\sqrt{w^Tw}} \\
@@ -335,18 +308,18 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
   \end{equation}
     \begin{equation}
   \begin{aligned}
-&  \underset{w,b}{\arg \max} \quad \gamma_{\min}=\underset{w,b}{\arg \max}\quad \underset{i=1,\dots,N}{\min}\gamma_i \\
+&  \underset{w,b}{ \max} \quad \gamma_{\min}=\underset{w,b}{ \max}\quad \underset{i=1,\dots,N}{\min}\gamma_i \\
 & s.t. \quad y_i\left( \frac{w^Tx_i+b}{\sqrt{w^Tw}} \right) \geq \gamma_{\min}
   \end{aligned}
 \end{equation}
     \begin{equation}
      \begin{aligned}
-     & \underset{w,b}{\arg \min}\frac{1}{2}w^Tw \\
-     & s.t. y_i(w^Tx_i+b) \geq 1, i = 1,\dots,N.
+     & \underset{w,b}{\min}\frac{1}{2}w^Tw \\
+     & y_i(w^Tx_i+b) \geq 1, i = 1,\dots,N.
      \end{aligned} \label{svmcons}
  \end{equation}  
 \end{frame}
-\begin{frame}{Support Vector Machine}
+\begin{frame}{Support Vector Machine(soft margin)}
  \begin{columns}
  \begin{column}{0.5\textwidth}
   \begin{equation} \nonumber
@@ -421,7 +394,7 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
 
 
 \begin{frame}{SMO algorithm}
-The SMO(Sequential Minimal optimization) algorithm can find a set of $\alpha$.
+The \href{https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr-98-14.pdf}{SMO}(Sequential Minimal Optimization) algorithm can find a set of $\alpha$.
 Through the set of $ \alpha $, we can calculate the weights \textbf{w} and \textbf{b}.
 \begin{equation}
     \begin{aligned}
@@ -432,23 +405,48 @@ Through the set of $ \alpha $, we can calculate the weights \textbf{w} and \text
     \end{aligned}
     \label{Cons_cond}
 \end{equation}
+\begin{equation}
+ w =\sum_{i=1}^N\alpha_i y_ix_i
+ \end{equation}
 \end{frame}
+
 \begin{frame}{SMO algorithm}
-Assume two variables $\alpha_1,\alpha_2$ are determined, rewrite the equation \ref{Cons_cond}:
-\begin{equation}
-    \underset{\alpha_1,\alpha_2}{\min}  L(\alpha)= \underset{\alpha_1,\alpha_2}{\min}W(\alpha_1,\alpha_2)
-    +\frac{1}{2}\sum_{i=3}^{N}\sum_{j=3}^{N}\alpha_i\alpha_jy_iy_jK(x_i,x_j)-\sum_{i=3}^{N}\alpha_i
-\end{equation}
-\begin{equation}
+ \begin{columns}
+             \begin{column}{0.5\textwidth}
+object:w,b
+Steps:
+\begin{enumerate}
+    \item Find a multiplier $\alpha_1^{old}$ 
+    \item Pick another multiplier $\alpha_2^{old}$
+    \item Compute the $\alpha_1^{new},\alpha_2^{new}$
+    \item Updata the value of b
+    \item Repeat the above steps until convergence
+\end{enumerate}
+
+           \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+    \begin{equation} \nonumber
     \begin{aligned}
-    \underset{\alpha_1,\alpha_2}{\min}W(\alpha_1,\alpha_2)
-   &=&&\frac{1}{2}K_{11}\alpha_1^2+\frac{1}{2}K_{22}\alpha_2^2-(\alpha_1+\alpha_2) \\
-   & &&+y_1\alpha_1\sum_{i=3}^{N}y_i\alpha_iK_{i1}+y_2\alpha_2\sum_{i=3}^Ny_i\alpha_iK_{i2} \\
-   &s.t.&&\alpha_1y_1+\alpha_2y_2 = -\sum_{i=3}^Ny_i\alpha_i = \zeta
+    &g(x) = \sum_{i=1}^{N}\alpha_iy_iK(x_i,x)+b \\
+ &E_i = g(x_i)-y_i \quad i = 1,2 \\
+&\eta = K_{11}+K_{22}-2K_{12} \\
+&\alpha_2^{new,unc}= \alpha_2^{old}+\frac{y_2(E_1-E_2)}{\eta}
     \end{aligned}
-    \label{SMO_cond}
 \end{equation}
-where $\zeta$ is constant.
+ \begin{equation} \nonumber
+    \alpha_2^{new}=\left\{
+\begin{aligned}
+&H,  &&\alpha_2^{new,unc}>H\\
+&\alpha_2^{new,unc}, &&L\leq \alpha_2^{new,unc}\leq H\\
+&L, &&\alpha_2^{new,unc}<L
+\end{aligned}
+\right.
+\end{equation}
+\begin{equation} \nonumber
+\alpha_1^{new} =    \alpha_1^{old}+y_1y_2(\alpha_2^{old}-\alpha_2^{new})
+\end{equation}
+        \end{column}
+    \end{columns}
 \end{frame}
 \begin{frame}{Tune hyperplane based on FAR or FDR}
  \begin{columns}
@@ -527,7 +525,7 @@ $
     \end{columns}
 \end{frame}
 \begin{frame}{Tune hyperplane based on FAR or FDR}
-Assume $D = -1$ is fault-free, $FAR = \alpha$,$FDR =\beta$.\par
+Assume $D = -1$ is fault-free, $FAR = \alpha$,$FDR =\beta$, large enough sample condition is satisfied.\par
 The (practical) FD specific requirements: \par
 $Pr(D=1|f=0)\leq \alpha$ or\par
 $Pr(D=1|f \neq 0)\geq \beta$ \par
@@ -557,8 +555,10 @@ I_{i+} = \left\{ \begin{aligned}
 \end{equation}
 where $x_f$ is faulty data, $j=1,2,\dots,n_2$
 \end{frame}
-\begin{frame}{Tune hyperplane based on FAR or FDR}
-Idea: Change b to meet FAR or FDR requirements. \par
+\begin{frame}{Tune hyperplane based on FAR}
+ \begin{columns}
+             \begin{column}{0.5\textwidth}
+    Idea: Change b to meet FAR or FDR requirements. \par
 Case 1: $Pr(D=1|f=0) > \alpha$
 \begin{exampleblock}{Steps}
       \begin{enumerate}
@@ -568,9 +568,66 @@ Case 1: $Pr(D=1|f=0) > \alpha$
       \item If  $Pr(D=1|f=0) > \alpha$, then go to the step 2 
  	 \end{enumerate}  
  	 \end{exampleblock}
+           \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+    \begin{figure}[!htb] 
+                \centering 
+                \begin{tikzpicture}[scale = 0.7]
+  % Draw axes
+  \draw [thick] (0,5) node (yaxis) [above] {$J_R$}
+        |-(5,0) node (xaxis) [right] {$J_{T^2}$};
+  % draw line
+  \draw (0,-1) -- (5,4); % y=x-1
+  \draw[dashed] (-1,0) -- (4,5); % y=x+1
+  \draw[dashed] (1,-2) -- (6,3); % y=x-3
+  % \draw labels
+  \draw (3.5,3) node[rotate=45,font=\small] 
+        {$\mathbf{w}^T \mathbf{x} + b = 0$};
+  \draw (2.5,4) node[rotate=45,font=\small] 
+        {$\mathbf{w}^T \mathbf{x} + b = 1$};
+  \draw (4.5,2) node[rotate=45,font=\small] 
+        {$\mathbf{w}^T \mathbf{x} + b = -1$};
+  % draw distance
+  \draw[dotted] (4,5) -- (6,3);
+  \draw (5.25,4.25) node[rotate=-45] {$\frac{2}{\Vert \mathbf{w} \Vert}$};
+  \draw[dotted] (0,0) -- (0.5,-0.5);
+  \draw (0,-0.5) node[rotate=-45] {$\frac{b}{\Vert \mathbf{w} \Vert}$};
+  \draw [->] (2,1) -- (1.5,1.5);
+  \draw (1.85,1.35) node[rotate=-45] {$\mathbf{w}$};
+  % draw negative dots
+  \fill[red] (0.5,1.5) circle (3pt);
+  \fill[red]   (1.5,2.5)   circle (3pt);
+  \fill[black] (1,2.5)     circle (3pt);
+  \fill[black] (0.75,2)    circle (3pt);
+  \fill[black] (0.6,1.9)   circle (3pt);
+  \fill[black] (0.77, 2.5) circle (3pt);
+  \fill[black] (1.5,3)     circle (3pt);
+  \fill[black] (1.3,3.3)   circle (3pt);
+  \fill[black] (0.6,3.2)   circle (3pt);
+  \fill[black] (0.5,1)     circle (3pt);  % the outlier of the data
+  \fill[black] (2,0.5)     circle (3pt);
+  % draw positive dots
+  \draw[red,thick] (4,1)     circle (3pt); 
+  \draw[red,thick] (3.3,.3)  circle (3pt); 
+  \draw[black]     (4.5,1.2) circle (3pt); 
+  \draw[black]     (4.5,.5)  circle (3pt); 
+  \draw[black]     (3.9,.7)  circle (3pt); 
+  \draw[black]     (5,1)     circle (3pt); 
+  \draw[black]     (3.5,.2)  circle (3pt); 
+  \draw[black]     (4,.3)    circle (3pt); 
+  \draw[black]     (3,1.5)   circle (3pt); % the outlier of the data
+  \draw[black]     (2,2)     circle (3pt);
+\end{tikzpicture}
+            \end{figure}
+  
+        \end{column}
+    \end{columns}
 \end{frame}
 
-\begin{frame}{Tune hyperplane based on FAR or FDR}
+\begin{frame}{Tune hyperplane based on FDR}
+ \begin{columns}
+             \begin{column}{0.5\textwidth}
+    
     Case 2: $Pr(D=1|f\neq 0) < \beta$
 \begin{exampleblock}{Steps}
       \begin{enumerate}
@@ -580,15 +637,70 @@ Case 1: $Pr(D=1|f=0) > \alpha$
       \item If  $Pr(D=1|f\neq 0) < \beta$, then go to the step 2 
  	 \end{enumerate}  
  	 \end{exampleblock}
+           \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+    \begin{figure}[!htb] 
+                \centering 
+                \begin{tikzpicture}[scale = 0.7]
+  % Draw axes
+  \draw [thick] (0,5) node (yaxis) [above] {$J_R$}
+        |-(5,0) node (xaxis) [right] {$J_{T^2}$};
+  % draw line
+  \draw (0,-1) -- (5,4); % y=x-1
+  \draw[dashed] (-1,0) -- (4,5); % y=x+1
+  \draw[dashed] (1,-2) -- (6,3); % y=x-3
+  % \draw labels
+  \draw (3.5,3) node[rotate=45,font=\small] 
+        {$\mathbf{w}^T \mathbf{x} + b = 0$};
+  \draw (2.5,4) node[rotate=45,font=\small] 
+        {$\mathbf{w}^T \mathbf{x} + b = 1$};
+  \draw (4.5,2) node[rotate=45,font=\small] 
+        {$\mathbf{w}^T \mathbf{x} + b = -1$};
+  % draw distance
+  \draw[dotted] (4,5) -- (6,3);
+  \draw (5.25,4.25) node[rotate=-45] {$\frac{2}{\Vert \mathbf{w} \Vert}$};
+  \draw[dotted] (0,0) -- (0.5,-0.5);
+  \draw (0,-0.5) node[rotate=-45] {$\frac{b}{\Vert \mathbf{w} \Vert}$};
+  \draw [->] (2,1) -- (1.5,1.5);
+  \draw (1.85,1.35) node[rotate=-45] {$\mathbf{w}$};
+  % draw negative dots
+  \fill[red] (0.5,1.5) circle (3pt);
+  \fill[red]   (1.5,2.5)   circle (3pt);
+  \fill[black] (1,2.5)     circle (3pt);
+  \fill[black] (0.75,2)    circle (3pt);
+  \fill[black] (0.6,1.9)   circle (3pt);
+  \fill[black] (0.77, 2.5) circle (3pt);
+  \fill[black] (1.5,3)     circle (3pt);
+  \fill[black] (1.3,3.3)   circle (3pt);
+  \fill[black] (0.6,3.2)   circle (3pt);
+  \fill[black] (0.5,1)     circle (3pt);  % the outlier of the data
+  \fill[black] (2,0.5)     circle (3pt);
+  % draw positive dots
+  \draw[red,thick] (4,1)     circle (3pt); 
+  \draw[red,thick] (3.3,.3)  circle (3pt); 
+  \draw[black]     (4.5,1.2) circle (3pt); 
+  \draw[black]     (4.5,.5)  circle (3pt); 
+  \draw[black]     (3.9,.7)  circle (3pt); 
+  \draw[black]     (5,1)     circle (3pt); 
+  \draw[black]     (3.5,.2)  circle (3pt); 
+  \draw[black]     (4,.3)    circle (3pt); 
+  \draw[black]     (3,1.5)   circle (3pt); % the outlier of the data
+  \draw[black]     (2,2)     circle (3pt);
+\end{tikzpicture}
+            \end{figure}
+  
+        \end{column}
+    \end{columns}
+
 \end{frame}
 \section{Benchmark study}
 \begin{frame}{Generating the data}
-    $y = y + f, \left\{ \begin{aligned}
+    $y = y_n + f, \left\{ \begin{aligned}
     f = 0      \quad &\text{fault-free} \\
     f \neq 0   \quad &\text{additive faults}
      \end{aligned} 
      \right. $
-   $y = My,\left\{ \begin{aligned}
+   $y = My_n,\left\{ \begin{aligned}
     M = Id     \quad &\text{fault-free} \\
     f \neq Id   \quad &\text{multiplicative faults}
      \end{aligned} 
@@ -600,6 +712,7 @@ Case 1: $Pr(D=1|f=0) > \alpha$
     \item Changes in variance can be mapped to multiplicative faults
     \end{itemize}
     \end{exampleblock}
+    
 \end{frame}
 \begin{frame}{Generating the data}
 \begin{center}
@@ -616,8 +729,8 @@ $y_{ms}$ &$n_5$& $y_{ms_l} \sim N(\mu,\sigma_l^2)$  \\
 \end{tabular}
 \end{center}
 where $\mu \neq \mu_i,\mu \neq \mu_j,\mu \neq \mu_k,\sigma \neq \sigma_i,\sigma < \sigma_j,\sigma \neq \sigma_k,\sigma > \sigma_l$. \par Every \textbf{p} samples as a group
-$y_{a_i},y_{m_i},y_{am_i}$. \par $i = 1,2,\dots,\frac{n_2}{p},j=1,2,\dots,\frac{n_3}{p}$ \par
-$k = 1,2,\dots,\frac{n_4}{p},l = 1,2,\dots, \frac{n_5}{l}$
+$y_{a_i},y_{m_j},y_{am_k},y_{ms_l}$. \par $i = 1,2,\dots,\frac{n_2}{p},j=1,2,\dots,\frac{n_3}{p}$ \par
+$k = 1,2,\dots,\frac{n_4}{p},l = 1,2,\dots, \frac{n_5}{p}$
 \end{frame}
 \begin{frame}{Case study on a numerical example}
       \begin{figure}
@@ -642,10 +755,10 @@ $k = 1,2,\dots,\frac{n_4}{p},l = 1,2,\dots, \frac{n_5}{l}$
 \end{aligned}
 \end{equation}
 \end{small}
-For case 1: \par  $\small{w^T = [ 0.4106 \quad -0.6689]
+ Case 1: \par  $\small{w^T = [ 0.4106 \quad -0.6689]
  , b = -3.473} $\par $\small{\alpha \approx 0.047\%,\beta  \approx  99.9\%,VA \approx 99.93\%}$ \par 
-For case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
- , b = -0.8336} $\par $\small{\alpha \approx 0.33\%  ,\beta  \approx  98.8 \%,VA = \approx 89.83 \%}$ \par
+Case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
+ , b = -0.8336} $\par $\small{\alpha \approx 0.33\%  ,\beta  \approx  98.8 \%,VA \approx 89.83 \%}$ \par
  where VA is validation accuracy.
            \end{column}
         \begin{column}{0.5\textwidth} 
@@ -662,7 +775,7 @@ For case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
 \begin{frame}{Case study on a numerical example}
  \begin{columns}
              \begin{column}{0.5\textwidth}
-    For case 3: \par
+   Case 3: \par
      $\small{w^T = [0.2859 \quad -0.1169]
  , b =-1.7315 } $\par $\small{\alpha  \approx 4.7\%,\beta  \approx 95 \% ,VA \approx}90.11 \% $ \par 
  With reference to the values of $\alpha$ and $\beta$, the prediction accuracy is satisfactory. But compared to case 1 and case 2, it has the worst performance.
@@ -684,7 +797,7 @@ For case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
       \begin{exampleblock}{Data reoptimization}
 	\begin{itemize}
     \item Cumulative  $T^2$-statistic
-    \item Cumulative  Riemannian Metric
+    \item Cumulative  Riemannian metric
     \end{itemize}
     \end{exampleblock}
     \begin{small}
@@ -699,10 +812,10 @@ For case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
 \begin{frame}{Case study on a numerical example}
      \begin{columns}
              \begin{column}{0.5\textwidth}
-       For case 4: \par
+       Case 4: \par
      $\scriptsize{w^T = [ 0.8847 \quad 0.0007]
  , b =-6.3180 } $\par $\scriptsize{\alpha  \approx 0\%,\beta  \approx 99.99 \% ,VA \approx 99.99} \% $ \par 
- For case 5: \par 
+Case 5: \par 
    $\scriptsize{w^T = [0.0481 \quad 5.2780]
  , b = -23.5837} $\par $\scriptsize{\alpha  \approx 3.3333\times 10^{-3} \%,\beta  \approx 99.97\% }$ \par 
 $VA \approx 99.99 \% $
@@ -726,6 +839,13 @@ $VA \approx 99.99 \% $
               \centering
            \includegraphics[width=5cm]{fig/perfectR.eps}
             \end{figure}
+            \begin{equation} \nonumber
+            \begin{aligned}
+         &w_r^T = [0.2859  \quad  -0.1169] \quad &b_r =  -1.7315 \\
+         &w_g^T = [0.8847 \quad 0.0007]\quad &b_g =-6.3180  \\
+         &w_b^T = [0.0481 \quad 5.2780] \quad &b_b = -23.5837  \\
+           \end{aligned}
+            \end{equation}
            \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
    \begin{figure}
@@ -734,13 +854,18 @@ $VA \approx 99.99 \% $
         \includegraphics[width=3cm]{fig/thresholdT.eps} \\
         \includegraphics[width=3cm]{fig/miniVarP.eps}
         \end{figure}
-  
         \end{column}
     \end{columns}
 \end{frame}
 \begin{frame}{Case study on three-tank system(TTS)}
-    \begin{columns}
-             \begin{column}{0.5\textwidth}
+\begin{columns}
+         \begin{column}{0.5\textwidth}
+         \begin{equation}
+         \begin{aligned}
+     &\dot{x}=(A+\Delta A_F)x + Bu + E_ff  \\
+     &y = Cx+F_ff
+     \end{aligned}
+ \end{equation}    
         $w^T = [0.0481 \quad 5.2780]$ $b = -23.5837$
     \begin{equation} \nonumber
   \begin{aligned}
@@ -767,6 +892,18 @@ $VA \approx 99.99 \% $
      \begin{columns}
              \begin{column}{0.5\textwidth}
  $w^T = [0.1775 \quad 2.2058]$,$b = -7.1464$
+ \begin{equation} \nonumber
+  \begin{aligned}
+  & f(x) =  
+ w^Tx_i+b  \\
+  & D = \left\{
+     \begin{aligned}
+      &-1\quad &f(x)<0 \quad &\text{(fault-free)}  \\
+      &\quad 1    \quad &f(x)>0 \quad &\text{(faulty)}
+     \end{aligned}
+  \right. 
+    \end{aligned}
+\end{equation}
 \begin{equation} \nonumber
   \begin{aligned}
    & FAR \approx \frac{1}{1+1142} \approx  8.7489\times 10^{-2} \% \\
@@ -789,29 +926,19 @@ $VA \approx 99.99 \% $
 \end{frame}
 \section{Conclusion and future work}
 
-\begin{frame}{Conclusion}
- \metroset{block=fill}
-    \begin{exampleblock}{Advantage}
-	\begin{itemize}
-    \item Different faults are distributed in different areas
-    \item A satisfactory fault detection performance(sufficient data)
-    \item Ability to detect when the variance becomes smaller
-    \end{itemize}
-    \end{exampleblock}
-    
-     \metroset{block=fill}
-    \begin{exampleblock}{Disadvantage}
-	\begin{itemize}
-    \item Need a lot of data
-    \item Offline training requires a lot of calculations
-    \end{itemize}
-    \end{exampleblock}
-\end{frame}
-\begin{frame}{Future work}
-      \begin{itemize}
+\begin{frame}{Conclusion and future work}
+Conclusion:
+\begin{itemize}
+    \item extract feature data using the $T^2$-statistic and Riemannian manifold
+    \item data reoptimization
+    \item find hyperplane
+    \item tune hyperplane
+\end{itemize}
+Future work:
+     \begin{itemize}
       \item \textcolor{blue}{1}: Combine 3 FD methods using SVM
         \item \textcolor{blue}{2}: determine the decision function by the degree of freedom and the variance of the data
-      \item \textcolor{blue}{3}: Random algorithms to find the threshold of two-dimensional data or the threshold of three-dimensional data
+      \item \textcolor{blue}{3}: Random algorithms to find the threshold of two-dimensional data 
  	 \end{itemize}  
 \end{frame}
 
@@ -822,4 +949,198 @@ Thank you for your attention!
 \end{frame}
 
 \section{Appendix}
+\begin{frame}{Geometry of SPD Matrices}
+An n $\times$ n square matrix M is SPD, if and only if
+\begin{itemize}
+    \item $M^T = M$
+    \item $u^TMu>0$ and $\forall u \neq 0$
+\end{itemize}
+SPD matrices have the following properties:
+\begin{itemize}
+\item 1. $\forall$ M $\in$ SPD(n), $M^{-1}$ $\in$ SPD(n) i.e., SPD matrices are invertible. 
+\item 2. $\forall$ M $\in$ SPD(n), eigenvalues are positive i.e., λ(M) > 0.
+\end{itemize}
+\end{frame}
+\begin{frame}{Riemannian metric}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+          \begin{equation} \nonumber
+          \begin{aligned}
+          &S_i = C^{\frac{1}{2}}logm(C^{-\frac{1}{2}}C_iC^{-\frac{1}{2}})C^{\frac{1}{2}} \\
+          &C_i = C^{\frac{1}{2}}expm(C^{-\frac{1}{2}}S_iC^{-\frac{1}{2}})C^{\frac{1}{2}} \\
+          \end{aligned}
+           \end{equation}
+        \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+            \begin{figure}[!htb] 
+                \centering 
+               \includegraphics[width=0.7\textwidth]{RieDis.png}
+               \caption{\href{https://www.mdpi.com/1424-8220/19/2/379}{Riemannian mainfold}} 
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+\begin{frame}{Support Vector Machine(linearly separable)}
+\begin{equation}
+L(w,b,\alpha) = \frac{1}{2}w^Tw-\sum_{i=1}^N\alpha_i(y_i(w^Tx+b)-1)
+\end{equation}
+\begin{equation}
+    \begin{aligned}
+&\frac{\partial{L}}{\partial{w}} = w - \sum_{i=1}^N\alpha y_ix_i = 0  \\
+&\frac{\partial{L}}{\partial{b}} =- \sum_{i=1}^{N} \alpha_iy_i =0 
+    \end{aligned} \label{Dif_wb}
+\end{equation}
+\begin{equation}
+    \begin{aligned}
+    w =\sum_{i=1}^N\alpha_i y_ix_i  \\
+    \sum_{i=1}^{N} \alpha_iy_i = 0  \\ 
+    \end{aligned}
+    \label{wbValue}
+\end{equation}
+\begin{equation}
+\underset{\alpha}{\max}L(\alpha)
+=  \sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i,j=1}^Ny_iy_j\alpha_i\alpha_j<x_i \cdot x_j>
+    \label{o_wb}
+\end{equation}
+\end{frame}
+\begin{frame}{SMO algorithm}
+    When $y_1 \neq y_2$:
+\begin{equation}
+    \begin{aligned}
+        & L = \max(0,\alpha_2^{old}-\alpha_1^{old}) \\
+        & H = \min(C,C+\alpha_2^{old}-\alpha_1^{old})
+    \end{aligned}
+\end{equation}
+when $y_1 = y_2$:
+\begin{equation}
+    \begin{aligned}
+&    L = \max(0,\alpha_2^{old}+\alpha_1^{old}-C) \\
+&    H = \min(C,\alpha_2^{old}+\alpha_1^{old})
+    \end{aligned}
+\end{equation}
+\end{frame}
+
+\begin{frame}{SMO algorithm}
+Assume two variables $\alpha_1,\alpha_2$ are determined, rewrite the equation \ref{Cons_cond}:
+\begin{equation}
+    \underset{\alpha_1,\alpha_2}{\min}  L(\alpha)= \underset{\alpha_1,\alpha_2}{\min}W(\alpha_1,\alpha_2)
+    +\frac{1}{2}\sum_{i=3}^{N}\sum_{j=3}^{N}\alpha_i\alpha_jy_iy_jK(x_i,x_j)-\sum_{i=3}^{N}\alpha_i
+\end{equation}
+\begin{equation}
+    \begin{aligned}
+    \underset{\alpha_1,\alpha_2}{\min}W(\alpha_1,\alpha_2)
+   &=&&\frac{1}{2}K_{11}\alpha_1^2+\frac{1}{2}K_{22}\alpha_2^2-(\alpha_1+\alpha_2) \\
+   & &&+y_1\alpha_1\sum_{i=3}^{N}y_i\alpha_iK_{i1}+y_2\alpha_2\sum_{i=3}^Ny_i\alpha_iK_{i2} \\
+   &s.t.&&\alpha_1y_1+\alpha_2y_2 = -\sum_{i=3}^Ny_i\alpha_i = \zeta
+    \end{aligned}
+    \label{SMO_cond}
+\end{equation}
+where $\zeta$ is constant.
+\end{frame}
+
+\begin{frame}{SMO algorithm}
+    \begin{equation}
+    \begin{aligned}
+    &g(x) = \sum_{i=1}^{N}\alpha_iy_iK(x_i,x)+b \\
+ &E_i = g(x_i)-y_i= \left(\sum_{j=1}^N\alpha_jy_jK(x_j,x_i)+b\right)-y_i \quad i = 1,2 \\
+&\eta = K_{11}+K_{22}-2K_{12} \\
+&\alpha_2^{new,unc}= \alpha_2^{old}+\frac{y_2(E_1-E_2)}{\eta}
+    \end{aligned}
+\end{equation}
+ \begin{equation}
+    \alpha_2^{new}=\left\{
+\begin{aligned}
+&H,  &&\alpha_2^{new,unc}>H\\
+&\alpha_2^{new,unc}, &&L\leq \alpha_2^{new,unc}\leq H\\
+&L, &&\alpha_2^{new,unc}<L
+\end{aligned}
+\right.
+\end{equation}
+\begin{equation}
+\alpha_1^{new} =    \alpha_1^{old}+y_1y_2(\alpha_2^{old}-\alpha_2^{new})
+\end{equation}
+\begin{equation}
+b_1^{new}=-E_1-y_1K_{11}(\alpha_1^{new}-\alpha_1^{old})-y_2K_{21}(\alpha_2^{new}-\alpha_2^{old})+b^{old}
+\end{equation}
+\begin{equation}
+b_2^{new}=-E_2-y_1K_{12}(\alpha_1^{new}-\alpha^{old})-y_2K_{22}(\alpha_2^{new}-\alpha_2^{old})+b^{old}
+\end{equation}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Chernoff bound and Sample size bound}
+\begin{theorem}[Chernoff bound]
+        \label{tm:Chernoff}
+        For any $ \delta \in (0,1)$ and $\epsilon \in (0,1)$, if
+        \begin{equation}
+        N \geq \frac{1}{2\epsilon^2}log\frac{2}{\delta}
+        \label{eq:Chernoff}
+        \end{equation}
+        then, with probability greater than $1-\delta$, we have $\left|\hat{p}_N(\gamma)-p(\gamma)\right|<\epsilon$.
+    \end{theorem}
+    \begin{theorem}[Sample size bound for worst-case performance]
+        \label{th:worst-case}
+        For any $ \delta \in (0,1)$ and $\epsilon \in (0,1)$, if
+        \begin{equation}
+        N \geq \frac{log\frac{1}{\delta}}{log\frac{1}{1-\epsilon}}
+        \label{eq:worstcase}
+        \end{equation}
+        then, with probability greater than $1-\delta$, we have 
+        \begin{equation}
+        P_{R_{y}} \{J(y) \leq \hat{\gamma}_N \} \geq 1-\epsilon, \quad \hat{\gamma}_N = \max_{i=1,\cdots,N}J(y^{(i)})
+        \end{equation}
+        \end{theorem}
+    \end{frame}
+\begin{frame}{Three-tank system}
+        \begin{equation} \nonumber
+    f(h) =
+     \frac{1}{A}
+    \begin{bmatrix}
+    -a_1s_{13}sgn(h_1-h_3)\sqrt{2g|h_1-h_3|} \\  
+    a_3s_{23}sgn(h_3-h_2)\sqrt{2g|h_3-h_2|}-a_2s_0\sqrt{2gh_2} \\
+    a_1s_{13}sgn(h_1-h_3)\sqrt{2g|h_1-h_3|}-a_3s_{23}sgn(h_3-h_2)\sqrt{2g|h_3-h_2|}
+    \end{bmatrix}
+    \end{equation}
+    \begin{equation} \nonumber
+  \begin{aligned}
+&  u_1 = Q_1 = Q_{13} + A(a_{11}h_1+v_1(w_1-h_1)) \\
+&  u_2 = Q_2 = Q_{20} - Q_{32} +A(a_{22}h_2+v_2(w_2-h_2))
+  \end{aligned}
+  \label{u1}
+\end{equation}
+\begin{equation} \nonumber
+  \begin{bmatrix}
+    \dot{h}_1 \\
+    \dot{h}_2 \\
+  \end{bmatrix}
+  = 
+  \begin{bmatrix}
+    (a_{11}-v_1)h_1 \\
+    (a_{22}-v_2)h_2 \\
+  \end{bmatrix}
+  +\begin{bmatrix}
+    v_1 & 0\\
+    0   & v_2 \\
+  \end{bmatrix}
+  \begin{bmatrix}
+    w_1 \\
+    w_2 \\
+  \end{bmatrix}
+\end{equation}
+    \end{frame}
+\begin{frame}{CSTH}
+    Article: \par
+      \href{https://www.sciencedirect.com/science/article/pii/S0959152407001126}{A continuous stirred tank heater simulation model with applications}
+      Download: \par
+        \href{http://personal-pages.ps.ic.ac.uk/~nina/CSTHSimulation/CSTHMaster.mdl}{CSTH model}
+    \end{frame}
+\begin{frame}{kernel function}
+    Polynomial: $K(x_i,x_j) = (x_i^Tx_j)^d$ \par
+    Gaussian:  $K(x_i,x_j) = exp(-\gamma \norm{x_i-x_j}^2)$ \par
+    Hyperbolic tangent: $K(x_i,x_j) = tanh(\kappa x_i^Tx_j+c)$
+    \end{frame}
 \end{document}
