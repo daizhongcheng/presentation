@@ -54,7 +54,7 @@ Dr. Ing. Chris Louen
     \end{exampleblock}
 \end{frame}
 \begin{frame}{Background}
- A brief summary of the steps:
+ A brief summary of the traditional methods:
       \begin{itemize}
       \item \textcolor{blue}{S1}: collect sufficient fault-free data
       \item \textcolor{blue}{S2}: offline training to determine the threshold
@@ -175,10 +175,9 @@ Where $\textbf{m}$ is the dimension of the output data. It is also called  degre
 \begin{frame}{Riemannian distance}
 Find the mean matrix (\textbf{Karcher mean}) $X_{Karcher}$ which satisfies
     \begin{equation}\sum\limits^{n_1}_{i=1}log(S_i^{-1}X_{Karcher})=0\end{equation}\\
-    by iteration\href{https://www.sciencedirect.com/science/article/pii/S0024379511006616}{[1]}: $
+    by iteration:\href{https://www.sciencedirect.com/science/article/pii/S0024379511006616}{$
         X_{k+1}=X_k-L X_k^{\frac{1}{2}}\sum\limits^{n_1}_{i=1}log(X_k^{\frac{1}{2}}S_i^{-1}X_k^{\frac{1}{2}})X_k^{\frac{1}{2}}
-        \label{eq:iteration2} $ 
-
+        \label{eq:iteration2} $ } 
     \begin{equation}
 R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_{i=1}^mlog^2\lambda_i  \right)^\frac{1}{2}
     \end{equation} 
@@ -400,7 +399,7 @@ Through the set of $ \alpha $, we can calculate the weights \textbf{w} and \text
     \begin{aligned}
    & \underset{\alpha}{\min}&&L(\alpha)=\frac{1}{2}\sum_{i=1}^{N}\sum_{j=1}^{N}
     \alpha_i\alpha_jy_iy_jK(x_i,x_j)-\sum_{i=1}^{N}\alpha_i \\
-   & s.t. &&\sum_{i=1}^{N}\alpha_iy_i=0 \\
+   & subject to &&\sum_{i=1}^{N}\alpha_iy_i=0 \\
    & && 0 \leq\alpha_i\leq C 
     \end{aligned}
     \label{Cons_cond}
@@ -536,8 +535,8 @@ how to solve the problem?
 \end{frame}
 
 \begin{frame}{Tune hyperplane based on FAR or FDR}
-$Pr(D=1|f=0) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}I_{i-}$  \par
-$Pr(D=1|f \neq 0) \approx          \frac{1}{n_2}\sum_{j=1}^{n_2}I_{j+}$ \par
+FAR:$Pr(D=1|f=0) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}I_{i-}$  \par
+FDR:$Pr(D=1|f \neq 0) \approx          \frac{1}{n_2}\sum_{j=1}^{n_2}I_{j+}$ \par
 \begin{equation}
 I_{i-} = \left\{ \begin{aligned}
 0 \quad  w^Tx_{n_i} + b < 0 \\
@@ -693,7 +692,7 @@ Case 1: $Pr(D=1|f=0) > \alpha$
     \end{columns}
 
 \end{frame}
-\section{Benchmark study}
+\section{Case study}
 \begin{frame}{Generating the data}
     $y = y_n + f, \left\{ \begin{aligned}
     f = 0      \quad &\text{fault-free} \\
@@ -728,7 +727,7 @@ $y_{ms}$ &$n_5$& $y_{ms_l} \sim N(\mu,\sigma_l^2)$  \\
 \hline
 \end{tabular}
 \end{center}
-where $\mu \neq \mu_i,\mu \neq \mu_j,\mu \neq \mu_k,\sigma \neq \sigma_i,\sigma < \sigma_j,\sigma \neq \sigma_k,\sigma > \sigma_l$. \par Every \textbf{p} samples as a group
+where $\mu \neq \mu_i,\mu \neq \mu_k,\sigma < \sigma_j,\sigma \neq \sigma_k,\sigma > \sigma_l$. \par Every \textbf{p} samples as a group
 $y_{a_i},y_{m_j},y_{am_k},y_{ms_l}$. \par $i = 1,2,\dots,\frac{n_2}{p},j=1,2,\dots,\frac{n_3}{p}$ \par
 $k = 1,2,\dots,\frac{n_4}{p},l = 1,2,\dots, \frac{n_5}{p}$
 \end{frame}
@@ -834,7 +833,7 @@ $VA \approx 99.99 \% $
 \end{frame}
 \begin{frame}{Case study on a numerical example}
      \begin{columns}
-             \begin{column}{0.5\textwidth}
+             \begin{column}{0.6\textwidth}
               \begin{figure}
               \centering
            \includegraphics[width=5cm]{fig/perfectR.eps}
@@ -847,13 +846,16 @@ $VA \approx 99.99 \% $
            \end{aligned}
             \end{equation}
            \end{column}
-        \begin{column}{0.5\textwidth}  %%<--- here
-   \begin{figure}
-        \centering
-        \includegraphics[width=3cm]{fig/Coriginal.eps} \\
-        \includegraphics[width=3cm]{fig/thresholdT.eps} \\
-        \includegraphics[width=3cm]{fig/miniVarP.eps}
-        \end{figure}
+        \begin{column}{0.4\textwidth}  %%<--- here
+         $f_r(x)=w_rx+b_r =0$ \par
+         $f_g(x)=w_gx+b_g = 0$ \par
+         $f_b(x) = w_bx+b_b = 0$ \par 
+         \begin{enumerate}
+             \item $f_b(x_i)<0,f_g(x_i)< 0$ 
+             \item $f_b(x_i)>0,f_g(x_i)< 0$
+             \item $f_b(x_i),f_g(x_i),f_r(x_i)>0$
+             \item $f_b(x_i)>0,f_r(x_i)<0$
+         \end{enumerate}
         \end{column}
     \end{columns}
 \end{frame}
@@ -933,6 +935,7 @@ Conclusion:
     \item data reoptimization
     \item find hyperplane
     \item tune hyperplane
+    \item multi-hyperplanes separate the different types of fault
 \end{itemize}
 Future work:
      \begin{itemize}
@@ -1139,8 +1142,16 @@ b_2^{new}=-E_2-y_1K_{12}(\alpha_1^{new}-\alpha^{old})-y_2K_{22}(\alpha_2^{new}-\
         \href{http://personal-pages.ps.ic.ac.uk/~nina/CSTHSimulation/CSTHMaster.mdl}{CSTH model}
     \end{frame}
 \begin{frame}{kernel function}
-    Polynomial: $K(x_i,x_j) = (x_i^Tx_j)^d$ \par
+    \textcolor{blue}{Polynomial: $K(x_i,x_j) = (x_i^Tx_j)^d$} \par
     Gaussian:  $K(x_i,x_j) = exp(-\gamma \norm{x_i-x_j}^2)$ \par
     Hyperbolic tangent: $K(x_i,x_j) = tanh(\kappa x_i^Tx_j+c)$
+    \end{frame}
+    \begin{frame}{Comparison}
+         \begin{figure}
+        \centering
+        \includegraphics[width=3cm]{fig/Coriginal.eps} \\
+        \includegraphics[width=3cm]{fig/thresholdT.eps} \\
+        \includegraphics[width=3cm]{fig/miniVarP.eps}
+        \end{figure}
     \end{frame}
 \end{document}
