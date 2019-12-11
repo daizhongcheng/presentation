@@ -4,6 +4,11 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{tikz}
+
+\usepackage{tikz,mathpazo}
+\usetikzlibrary{shapes.geometric,arrows}
+\usetikzlibrary{calc}
+
 \usetikzlibrary{arrows}
 \usetheme[progressbar=frametitle]{metropolis}
 \usepackage{booktabs}
@@ -24,14 +29,14 @@
 \usepackage{xspace}
 \newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
 
-\title{A Fault Detection method based on SVM technique with $T^2$-Statistic and Riemannian metric}
+\title{A Fault Detection Method Based on SVM Technique with $T^2$-Statistic and Riemannian Metric}
 %\subtitle{going beyond IF and Scopus index (v2.0)}
 \author{Zhongcheng Dai  \\
  Supervisor: \\
  Prof. Dr. Ing. Steven Ding\\
 Dr. Ing. Chris Louen 
 }
- \date{30 November 2019}
+ \date{12.12.2019}
 \institute{Automatic Control and Complex Systems}
 \titlegraphic{\hfill\includegraphics[height=1cm]{logo_ITB}}
 \begin{document}
@@ -42,22 +47,10 @@ Dr. Ing. Chris Louen
 \end{frame}
 \section{Introduction}
 \begin{frame}{Background}
-\metroset{block=fill}
-    \begin{exampleblock}{Traditional methods}
-	\begin{itemize}
-    \item $T^2$-statistic
-    \item Q-statistic
-    \item Kullback-Leibler divergence
-    \item The Wishart distribution-based methods
-    \item \dots \dots
-    \end{itemize}
-    \end{exampleblock}
-\end{frame}
-\begin{frame}{Background}
- A brief summary of the traditional methods:
+ A brief summary of the traditional method:
       \begin{itemize}
       \item \textcolor{blue}{S1}: collect sufficient fault-free data
-      \item \textcolor{blue}{S2}: offline training to determine the threshold
+      \item \textcolor{blue}{S2}: offline training and determine the threshold
       \item \textcolor{blue}{S3}: online monitoring  % use the threshold to check the new data
  	 \end{itemize}  
  Detection logic:
@@ -69,54 +62,72 @@ Dr. Ing. Chris Louen
  \end{equation}
 \end{frame}
 \begin{frame}{Background}
- \begin{exampleblock}{Merits of the traditional methods}
+ \begin{exampleblock}{Merits of $T^2$-statistic}
 	\begin{itemize}
     \item The detection performance for additive faults is satisfactory
-    \item low computational cost(threshold and Online monitoring)
+    \item Low computational cost(threshold and online monitoring)
     \end{itemize}
     \end{exampleblock}
-    \begin{exampleblock}{Drawbacks of traditional methods}
+    \begin{exampleblock}{Drawbacks of $T^2$-statistic}
       \begin{itemize}
       \item The detection performance for multiplicative faults is unqualified
-      \item Unrecognized case where the variance becomes smaller
+ 	 \end{itemize}  
+ 	 \end{exampleblock}
+ 	   \begin{exampleblock}{Merits of Riemannian distance}
+      \begin{itemize}
+      \item No assumption of the distribution
+      \item It can detect changes in the variance
  	 \end{itemize}  
  	 \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Motivation and solution}
-\begin{exampleblock}{Motivation}
+\begin{frame}
+
+ \begin{columns}
+             \begin{column}{0.7\textwidth}
+     \begin{exampleblock}{Objective}
       \begin{itemize}
-      \item Eliminate the shortcomings of traditional methods
+      \item Eliminate the shortcomings of traditional method
       \item Enhance the fault detection performance
  	 \end{itemize}  
  	 \end{exampleblock}
  \begin{exampleblock}{Solution}
       \begin{itemize}
-      \item $T^2$-statistic and Riemannian metric
-      \item Support Vector Machine
- 	 \end{itemize}  
- 	 \end{exampleblock}
+      \item Combine  $T^2$-statistic and Riemannian metric with Support Vector Machine:
+       \begin{itemize}
+         \item  Extract the feature data as the training data set
+          \item Find the hyperplane as threshold
+          \end{itemize}
+ 	 	 \end{itemize}  
+ 	 \end{exampleblock}   
+           \end{column}
+        \begin{column}{0.3\textwidth}  %%<--- here
+        \begin{figure}
+            \centering
+            \includegraphics[width=4cm]{fig/process.png}
+        \end{figure}
+  
+        \end{column}
+    \end{columns}
+
 \end{frame}
-\section{Calculation of monitoring index}
+\section{Building monitoring index}
 \begin{frame}{Data}
-The data set $\textbf{y}$ is given, which has $n_1$ normal data and $n_2$
-faulty data
+The data $y_{obs}(i)$ is given, where $i = 1 \dots n_1 \dots N$.
+The data set $y = [y_{obs}(1) \dots y_{obs}(N)]$.
 \begin{equation}
-   y = [y_1 \ y_2 \ \dots y_{n_1} \ y_{n_1+1} \ y_{n_1+2} \ \dots y_{n_1+n_2}] 
-\end{equation}
-Where $n_1 + n_2 = N, y \in R^{m\times N}$
-\begin{equation}
-    y_i = 
+    y_{obs}(i)= 
     \begin{pmatrix}
-        y_i(1) \\
-        y_i(2) \\
+        y_{obs,1}(i) \\
+        y_{obs,2}(i) \\
        \vdots  \\
-        y_i(m) \\ 
+        y_{obs,m}(i) \\ 
     \end{pmatrix}
 \end{equation}
-Where $\textbf{m}$ is the dimension of the output data. It is also called  degrees of freedom. % it is also called "degrees of freedom" in $T^2$ distribution.
+Where $\textbf{m}$ is the dimension of the output data.% it is also called "degrees of freedom" in $T^2$ distribution.
+\par
 \end{frame}
-\begin{frame}{$T^2$-statistic as monitoring index}
+\begin{frame}{Building monitoring index with $T^2$-statistic}
     \begin{columns}
         \begin{column}{0.5\textwidth}
             the steps: %of $T^2$-statistic:
@@ -126,82 +137,50 @@ Where $\textbf{m}$ is the dimension of the output data. It is also called  degre
       \item \textcolor{blue}{S3}: normalizing the data
       \item \textcolor{blue}{S4}: computing the  covariance
       \item \textcolor{blue}{S5}: computing the value of evaluation function
-      \item \textcolor{blue}{S6}: Monitoring index
  	 \end{itemize}  
- 	 Where 
-  $
-                \sigma^{-1} \approx
-                \begin{bmatrix}
-                \sigma_1^{-1} &&&0\\
-                &  \sigma_2^{-1} && \\
-                && \ddots & \\
-                0&&& \sigma_m{-1}
-                \end{bmatrix}
-  $ 
         \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
       \begin{equation} \nonumber
                \begin{aligned}
-                  & E(y) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}y_i  \\
-                  & \sigma^2 \approx \frac{1}{n_1-1}\sum_{i=1}^{n_1}y_i^2 \\
-                  &  Y_i = \sigma^{-1}(y_i-E(y)) \quad i = 1\dots N \\
+                  & E \approx \frac{1}{n_1}\sum_{i=1}^{n_1}y_{obs}(i) \\
+                  & \sigma_j^2 \approx \frac{1}{n_1-1}\sum_{i=1}^{n_1}y_{obs,j}^2(i) \\
+                  &  Y_i = diag(\sigma^{-1}_1 \dots \sigma^{-1}_m)(y_{obs}(i)-E)  \\
                   &  N_y = [Y_1 \dots Y_{n_1}] \\
                   & \Sigma_y \approx \frac{N_yN_y^T}{n_1-1} \\
                   & J_{T^2}(i) = Y_i^T\Sigma_y^{-1}Y_i \quad i = 1\dots N\\  
              \end{aligned}
      \end{equation}
-      \begin{equation} \nonumber
-                  J_{T^2} =  \begin{bmatrix}
-                          J_{T^2}(1) \\
-                          J_{T^2}(2) \\
-                          \vdots      \\
-                           J_{T^2}(N)
-                         \end{bmatrix}
-                         \label{Jt}
-                \end{equation}
+    
         \end{column}
     \end{columns}
 \end{frame}
-\begin{frame}{Riemannian metric}
-    \metroset{block=fill}
-    \begin{exampleblock}{Common Riemannian manifolds}
-	\begin{itemize}
-    \item \textcolor{red}{symmetric positive definite (SPD) matrix manifolds}
-    \item Grassmann manifolds
-    \item Stiefel manifolds
-    \end{itemize}
-    \end{exampleblock}
-\end{frame}
+
 \begin{frame}{Riemannian distance}
 Find the mean matrix (\textbf{Karcher mean}) $X_{Karcher}$ which satisfies
     \begin{equation}\sum\limits^{n_1}_{i=1}log(S_i^{-1}X_{Karcher})=0\end{equation}\\
-    by iteration:\href{https://www.sciencedirect.com/science/article/pii/S0024379511006616}{$
+    by iteration:   \href{https://www.sciencedirect.com/science/article/pii/S0024379511006616}{$
         X_{k+1}=X_k-L X_k^{\frac{1}{2}}\sum\limits^{n_1}_{i=1}log(X_k^{\frac{1}{2}}S_i^{-1}X_k^{\frac{1}{2}})X_k^{\frac{1}{2}}
         \label{eq:iteration2} $ } 
     \begin{equation}
 R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_{i=1}^mlog^2\lambda_i  \right)^\frac{1}{2}
     \end{equation} 
     where $\norm{.}_F$ is the Frobenius norm, and $\lambda_i$'s are the eigenvalues  of $ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}$
-    \begin{equation}
-        R_d(A^TC_1A,A^TC_2A)=R_d(C_1,C2)
-    \end{equation}
-    This is a very important property
 \end{frame}
-\begin{frame}{Riemannian distance as monitoring index}
+\begin{frame}{Building monitoring index with Riemannian distance}
    \begin{columns}
         \begin{column}{0.5\textwidth}
             the steps:
       \begin{itemize}
-      \item \textcolor{blue}{S1}:   SPD matrix
-      \item \textcolor{blue}{S2}:  Karcher mean
-      \item \textcolor{blue}{S3}:  Riemannian distance
-      \item  \textcolor{blue}{S4}:  Monitoring index
+   %   \item   SPD matrix
+      \item \  Karcher mean
+      \item   Riemannian distance
+      \item    Monitoring index
  	 \end{itemize}  
         \end{column}
         \begin{column}{0.6\textwidth}  %%<--- here
-               \begin{equation}
-              S_i = y_iy_i^T
-               \end{equation}
+            %   \begin{equation}
+            %  S_i = y_iy_i^T+diag(d_1 \dots d_m)
+              % \end{equation}
                \begin{equation}
                  X_{k+1}=X_k-L X_k^{\frac{1}{2}}\sum\limits^{n_1}_{i=1}log(X_k^{\frac{1}{2}}S_i^{-1}X_k^{\frac{1}{2}})X_k^{\frac{1}{2}}
                \end{equation}
@@ -225,25 +204,28 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
         \begin{column}{0.5\textwidth}
            \begin{equation} \nonumber
            \begin{aligned}
-               J = \begin{bmatrix}
+             \text{Training data set:} \quad J = \begin{bmatrix}
                    J_{T^2}^T \\
                    J_R^T \\
                    \end{bmatrix} \\
-                   w = \begin{bmatrix}
-                        w_1 \\
-                        w_2 \\
-                       \end{bmatrix}
            \end{aligned}
            \end{equation}
-           Task: find (w,b) to maximize $\frac{2}{\norm{w}}$
-           \begin{equation} \nonumber
+           Task: find hyperplane $\Rightarrow$ find (w,b) to maximize $\frac{2}{\norm{w}}$
+         
+    \begin{equation}
+     \begin{aligned}
+     & \underset{w,b}{\min}\frac{1}{2}w^Tw \\
+     & y_i(w^Tx_i+b) \geq 1, i = 1,\dots,N.
+     \end{aligned} \label{svmcons}
+ \end{equation}  
+   \begin{equation} \nonumber
            D = sgn(w^Tx_i+b) = 
            \left\{  \begin{aligned} -1 \quad f = 0  \\
                                      1 \quad f \neq 0  \\   
                     \end{aligned}   
            \right.
            \end{equation}
-           where D is the dicision function, $x_i:=J(:,i)$.
+             where D is the decision function, $x_i:=J(:,i)$. $w,x_i \in R^{2\times 1}$
         \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
             \begin{figure}[!htb] 
@@ -298,26 +280,7 @@ R_d(C_1,C_2) = \norm{ C_1^{-\frac{1}{2}}C_2C_1^{-\frac{1}{2}}}_F = \left(  \sum_
         \end{column}
     \end{columns}
 \end{frame}
-\begin{frame}{Support Vector Machine(hard margin)}
-    \begin{equation}
-  \begin{aligned}
-  &\gamma_i =\frac{|\hat{\gamma}_i|}{\sqrt{w^Tw}} = \frac{|w^Tx_i+b|}{\sqrt{w^Tw}} \\
-  &\gamma_{\min}=\underset{i=1,\dots,N}{\min}\gamma_i
-  \end{aligned}
-  \end{equation}
-    \begin{equation}
-  \begin{aligned}
-&  \underset{w,b}{ \max} \quad \gamma_{\min}=\underset{w,b}{ \max}\quad \underset{i=1,\dots,N}{\min}\gamma_i \\
-& s.t. \quad y_i\left( \frac{w^Tx_i+b}{\sqrt{w^Tw}} \right) \geq \gamma_{\min}
-  \end{aligned}
-\end{equation}
-    \begin{equation}
-     \begin{aligned}
-     & \underset{w,b}{\min}\frac{1}{2}w^Tw \\
-     & y_i(w^Tx_i+b) \geq 1, i = 1,\dots,N.
-     \end{aligned} \label{svmcons}
- \end{equation}  
-\end{frame}
+
 \begin{frame}{Support Vector Machine(soft margin)}
  \begin{columns}
  \begin{column}{0.5\textwidth}
@@ -399,7 +362,7 @@ Through the set of $ \alpha $, we can calculate the weights \textbf{w} and \text
     \begin{aligned}
    & \underset{\alpha}{\min}&&L(\alpha)=\frac{1}{2}\sum_{i=1}^{N}\sum_{j=1}^{N}
     \alpha_i\alpha_jy_iy_jK(x_i,x_j)-\sum_{i=1}^{N}\alpha_i \\
-   & subject to &&\sum_{i=1}^{N}\alpha_iy_i=0 \\
+   & \text{subject to} &&\sum_{i=1}^{N}\alpha_iy_i=0 \\
    & && 0 \leq\alpha_i\leq C 
     \end{aligned}
     \label{Cons_cond}
@@ -412,9 +375,10 @@ Through the set of $ \alpha $, we can calculate the weights \textbf{w} and \text
 \begin{frame}{SMO algorithm}
  \begin{columns}
              \begin{column}{0.5\textwidth}
-object:w,b
+object: w,b \par
 Steps:
 \begin{enumerate}
+    \item Initialize the value of multiplier $\alpha$
     \item Find a multiplier $\alpha_1^{old}$ 
     \item Pick another multiplier $\alpha_2^{old}$
     \item Compute the $\alpha_1^{new},\alpha_2^{new}$
@@ -535,8 +499,8 @@ how to solve the problem?
 \end{frame}
 
 \begin{frame}{Tune hyperplane based on FAR or FDR}
-FAR:$Pr(D=1|f=0) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}I_{i-}$  \par
-FDR:$Pr(D=1|f \neq 0) \approx          \frac{1}{n_2}\sum_{j=1}^{n_2}I_{j+}$ \par
+\href{https://ieeexplore.ieee.org/abstract/document/8306878}{FAR}: $Pr(D=1|f=0) \approx \frac{1}{n_1}\sum_{i=1}^{n_1}I_{i-}$  \par
+\href{https://ieeexplore.ieee.org/abstract/document/8306878}{FDR}: $Pr(D=1|f \neq 0) \approx          \frac{1}{n_2}\sum_{j=1}^{n_2}I_{j+}$ \par
 \begin{equation}
 I_{i-} = \left\{ \begin{aligned}
 0 \quad  w^Tx_{n_i} + b < 0 \\
@@ -557,7 +521,7 @@ where $x_f$ is faulty data, $j=1,2,\dots,n_2$
 \begin{frame}{Tune hyperplane based on FAR}
  \begin{columns}
              \begin{column}{0.5\textwidth}
-    Idea: Change b to meet FAR or FDR requirements. \par
+    Idea: change b to meet FAR or FDR requirements. \par
 Case 1: $Pr(D=1|f=0) > \alpha$
 \begin{exampleblock}{Steps}
       \begin{enumerate}
@@ -701,20 +665,22 @@ Case 1: $Pr(D=1|f=0) > \alpha$
      \right. $
    $y = My_n,\left\{ \begin{aligned}
     M = Id     \quad &\text{fault-free} \\
-    f \neq Id   \quad &\text{multiplicative faults}
+    M \neq Id   \quad &\text{multiplicative faults}
      \end{aligned} 
      \right. $
      \metroset{block=fill}
       \begin{exampleblock}{Relation}
 	\begin{itemize}
-    \item Changes in mean can be mapped to additive faults
-    \item Changes in variance can be mapped to multiplicative faults
+    \item \href{https://ieeexplore.ieee.org/document/8425029}{Changes in mean can be mapped to additive faults} 
+    \item \href{https://ieeexplore.ieee.org/document/8425029}{Changes in variance can be mapped to multiplicative faults}
     \end{itemize}
     \end{exampleblock}
     
 \end{frame}
 \begin{frame}{Generating the data}
-\begin{center}
+ \begin{columns}
+             \begin{column}{0.5\textwidth}
+    \begin{center}
 \begin{tabular}{ccc}
 \hline
 y& number& Distribution                                    \\
@@ -722,112 +688,21 @@ y& number& Distribution                                    \\
 $y_n  $ &$n_1$& $y_n \sim N(\mu, \sigma^2)$                \\
 $y_a  $ &$n_2$& $y_{a_i} \sim N(\mu_i,\sigma^2$)           \\
 $y_m  $ &$n_3$& $y_{m_j} \sim N(\mu,\sigma_j^2)$           \\
-$y_{am}$&$n_4$& $y_{am_k}\sim N(\mu_k,\sigma_k^2)$         \\
-$y_{ms}$ &$n_5$& $y_{ms_l} \sim N(\mu,\sigma_l^2)$  \\
+%  $y_{am}$&$n_4$& $y_{am_k}\sim N(\mu_k,\sigma_k^2)$         \\
+$y_{ms}$ &$n_4$& $y_{ms_k} \sim N(\mu,\sigma_k^2)$  \\
 \hline
 \end{tabular}
 \end{center}
-where $\mu \neq \mu_i,\mu \neq \mu_k,\sigma < \sigma_j,\sigma \neq \sigma_k,\sigma > \sigma_l$. \par Every \textbf{p} samples as a group
-$y_{a_i},y_{m_j},y_{am_k},y_{ms_l}$. \par $i = 1,2,\dots,\frac{n_2}{p},j=1,2,\dots,\frac{n_3}{p}$ \par
-$k = 1,2,\dots,\frac{n_4}{p},l = 1,2,\dots, \frac{n_5}{p}$
-\end{frame}
-\begin{frame}{Case study on a numerical example}
-      \begin{figure}
-        \centering
-        \includegraphics[width=8cm]{fig/Coriginal.eps}
-        \caption{fault-free and faulty data}
-    \end{figure}
-\end{frame}
-\begin{frame}{Case study on a numerical example}
-    \begin{columns}
-             \begin{column}{0.5\textwidth}
- \begin{small}
-\begin{equation} \nonumber
-\begin{aligned}
-& w^Tx+b=0  \\
-& D=sgn(w^Tx_i+b) = \left\{ 
-    \begin{aligned}
-  & -1  \\
-  &\quad 1 
-  \end{aligned}
-     \right.
-\end{aligned}
-\end{equation}
-\end{small}
- Case 1: \par  $\small{w^T = [ 0.4106 \quad -0.6689]
- , b = -3.473} $\par $\small{\alpha \approx 0.047\%,\beta  \approx  99.9\%,VA \approx 99.93\%}$ \par 
-Case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
- , b = -0.8336} $\par $\small{\alpha \approx 0.33\%  ,\beta  \approx  98.8 \%,VA \approx 89.83 \%}$ \par
- where VA is validation accuracy.
-           \end{column}
-        \begin{column}{0.5\textwidth} 
-         \begin{figure}
-        \centering
-        \includegraphics[width=4cm]{fig/addHyper.eps}
-        \caption{$y_n$ and $y_a$ data(case 1)}
-        \includegraphics[width=4cm]{fig/ALhyperplane.eps}
-        \caption{$y_n$ and $y_{am}$ data(case 2)}
-        \end{figure}
-        \end{column}
-    \end{columns}
-\end{frame}
-\begin{frame}{Case study on a numerical example}
- \begin{columns}
-             \begin{column}{0.5\textwidth}
-   Case 3: \par
-     $\small{w^T = [0.2859 \quad -0.1169]
- , b =-1.7315 } $\par $\small{\alpha  \approx 4.7\%,\beta  \approx 95 \% ,VA \approx}90.11 \% $ \par 
- With reference to the values of $\alpha$ and $\beta$, the prediction accuracy is satisfactory. But compared to case 1 and case 2, it has the worst performance.
-           \end{column}
-        \begin{column}{0.4\textwidth}  %%<--- here
-   \begin{figure}
-        \centering
-        \includegraphics[width=4cm]{fig/EAandhyper.eps}
-        \caption{$y_n$ data(case 3)}
-        \includegraphics[width=4cm]{fig/EMandhyper.eps}
-        \caption{ $y_{m}$ data(case 3)}
-        \end{figure}
-        \end{column}
-    \end{columns}    
-\end{frame}
-
-\begin{frame}{Case study on a numerical example}
-     \metroset{block=fill}
-      \begin{exampleblock}{Data reoptimization}
-	\begin{itemize}
-    \item Cumulative  $T^2$-statistic
-    \item Cumulative  Riemannian metric
-    \end{itemize}
-    \end{exampleblock}
-    \begin{small}
-    \begin{equation}\nonumber
-       \begin{aligned}
-       J_{T_n^2}(j) = \frac{1}{n}\sum_{i}^{i+n-1}J_{T^2}(i) \\
-       J_{R_n}(j) = \frac{1}{n}\sum_{i}^{i+n-1}J_R(i)
-       \end{aligned}
-    \end{equation}
-    \end{small}
-\end{frame}
-\begin{frame}{Case study on a numerical example}
-     \begin{columns}
-             \begin{column}{0.5\textwidth}
-       Case 4: \par
-     $\scriptsize{w^T = [ 0.8847 \quad 0.0007]
- , b =-6.3180 } $\par $\scriptsize{\alpha  \approx 0\%,\beta  \approx 99.99 \% ,VA \approx 99.99} \% $ \par 
-Case 5: \par 
-   $\scriptsize{w^T = [0.0481 \quad 5.2780]
- , b = -23.5837} $\par $\scriptsize{\alpha  \approx 3.3333\times 10^{-3} \%,\beta  \approx 99.97\% }$ \par 
-$VA \approx 99.99 \% $
+where $\mu \neq \mu_i,\sigma < \sigma_j,\sigma > \sigma_k$. \par Every \textbf{p} samples as a group
+$y_{a_i},y_{m_j},y_{ms_k}$. \par $i = 1,2,\dots,\frac{n_2}{p},j=1,2,\dots,\frac{n_3}{p}$ \par
+$k = 1,2,\dots,\frac{n_4}{p}$
            \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
-    \begin{figure}
+   \begin{figure}
         \centering
-        \includegraphics[width=4cm]{fig/Cu3.eps}
-        \caption{$y_n,y_a,y_m,y_{am}$ (case 4)}
-        \includegraphics[width=4cm]{fig/miniVarP.eps}
-        \caption{ $y_n,y_a,y_{m},y_{am},y_{ms}$ (case 5)}
-        \end{figure}
-  
+        \includegraphics[width=6cm]{fig/four.eps} %Coriginal.eps
+    \end{figure}
+    $\hspace{1.2cm} y_n \hspace{1cm} y_a \hspace{0.7cm} y_m  \hspace{0.7cm} y_{ms}$
         \end{column}
     \end{columns}
 \end{frame}
@@ -847,9 +722,10 @@ $VA \approx 99.99 \% $
             \end{equation}
            \end{column}
         \begin{column}{0.4\textwidth}  %%<--- here
-         $f_r(x)=w_rx+b_r =0$ \par
-         $f_g(x)=w_gx+b_g = 0$ \par
-         $f_b(x) = w_bx+b_b = 0$ \par 
+        \textcolor{red}{Decision rule:}    \par
+         $f_r(x)=w_r^Tx+b_r $ \par
+         $f_g(x)=w_g^Tx+b_g $ \par
+         $f_b(x) = w_b^Tx+b_b$ \par 
          \begin{enumerate}
              \item $f_b(x_i)<0,f_g(x_i)< 0$ 
              \item $f_b(x_i)>0,f_g(x_i)< 0$
@@ -873,9 +749,11 @@ $VA \approx 99.99 \% $
   \begin{aligned}
    & FAR \approx \frac{14}{14+882331} \approx 1.5867\times 10^{-3} \% \\
    & FDR \approx 1 - \frac{48651}{48651+933651} \approx 95.05 \% \\
-   & VA \approx 1 - \frac{48651+14}{933651+882331} \approx 97.32 \% 
+   & VA \approx 1 - \frac{48651+14}{933651+882331} \approx 97.32 \%
   \end{aligned}
 \end{equation}
+   \par
+   VA: validation accuracy
            \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
    \begin{figure}
@@ -913,16 +791,18 @@ $VA \approx 99.99 \% $
    & VA \approx 1 - \frac{1+0}{1143+2743} \approx 99.97 \% 
   \end{aligned}
 \end{equation}
+   \par
+  VA: validation accuracy
            \end{column}
         \begin{column}{0.5\textwidth}  %%<--- here
    \begin{figure}
         \centering
         \includegraphics[width=4cm]{fig/csthrealdata.eps}
-        \caption{real data from CSTH}
+        \caption{data of CSTH}
         \includegraphics[width=4cm]{fig/Csthboundary.eps}
         \caption{The hyperplane of the data}
         \end{figure}
-  
+   
         \end{column}
     \end{columns}
 \end{frame}
@@ -932,16 +812,14 @@ $VA \approx 99.99 \% $
 Conclusion:
 \begin{itemize}
     \item extract feature data using the $T^2$-statistic and Riemannian manifold
-    \item data reoptimization
     \item find hyperplane
     \item tune hyperplane
-    \item multi-hyperplanes separate the different types of fault
+    \item multi-hyperplanes separate the different types of data
 \end{itemize}
 Future work:
      \begin{itemize}
       \item \textcolor{blue}{1}: Combine 3 FD methods using SVM
-        \item \textcolor{blue}{2}: determine the decision function by the degree of freedom and the variance of the data
-      \item \textcolor{blue}{3}: Random algorithms to find the threshold of two-dimensional data 
+      \item \textcolor{blue}{3}: Randomized algorithms to find the threshold of two-dimensional data 
  	 \end{itemize}  
 \end{frame}
 
@@ -1154,4 +1032,123 @@ b_2^{new}=-E_2-y_1K_{12}(\alpha_1^{new}-\alpha^{old})-y_2K_{22}(\alpha_2^{new}-\
         \includegraphics[width=3cm]{fig/miniVarP.eps}
         \end{figure}
     \end{frame}
+    
+    
+    \begin{frame}{Case study on a numerical example}
+    \begin{columns}
+             \begin{column}{0.5\textwidth}
+ \begin{small}
+\begin{equation} \nonumber
+\begin{aligned}
+& w^Tx+b=0  \\
+& D=sgn(w^Tx_i+b) = \left\{ 
+    \begin{aligned}
+  & -1  \\
+  &\quad 1 
+  \end{aligned}
+     \right.
+\end{aligned}
+\end{equation}
+\end{small}
+ Case 1: \par  $\small{w^T = [ 0.4106 \quad -0.6689]
+ , b = -3.473} $\par $\small{\alpha \approx 0.047\%,\beta  \approx  99.9\%,VA \approx 99.93\%}$ \par 
+Case 2:  \par $\small{w^T = [0.3305 \quad -0.7488]
+ , b = -0.8336} $\par $\small{\alpha \approx 0.33\%  ,\beta  \approx  98.8 \%,VA \approx 89.83 \%}$ \par
+ where VA is validation accuracy.
+           \end{column}
+        \begin{column}{0.5\textwidth} 
+         \begin{figure}
+        \centering
+        \includegraphics[width=4cm]{fig/addHyper.eps}
+        \caption{$y_n$ and $y_a$ (case 1)}
+        \includegraphics[width=4cm]{fig/ALhyperplane.eps}
+        \caption{$y_n$ and $y_{am}$ (case 2)}
+        \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Case study on a numerical example}
+     \begin{columns}
+             \begin{column}{0.5\textwidth}
+       Case 4: \par
+     $\scriptsize{w^T = [ 0.8847 \quad 0.0007]
+ , b =-6.3180 } $\par $\scriptsize{\alpha  \approx 0\%,\beta  \approx 99.99 \% ,VA \approx 99.99} \% $ \par 
+Case 5: \par 
+   $\scriptsize{w^T = [0.0481 \quad 5.2780]
+ , b = -23.5837} $\par $\scriptsize{\alpha  \approx 3.3333\times 10^{-3} \%,\beta  \approx 99.97\% }$ \par 
+$VA \approx 99.99 \% $
+           \end{column}
+        \begin{column}{0.5\textwidth}  %%<--- here
+    \begin{figure}
+        \centering
+        \includegraphics[width=4cm]{fig/Cu3.eps}
+        \caption{$y_n,y_a,y_m,y_{am}$ (case 4)}
+        \includegraphics[width=4cm]{fig/miniVarP.eps}
+        \caption{ $y_n,y_a,y_{m},y_{am},y_{ms}$ (case 5)}
+        \end{figure}
+  
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Case study on a numerical example}
+ \begin{columns}
+             \begin{column}{0.5\textwidth}
+   Case 3: \par
+     $\small{w^T = [0.2859 \quad -0.1169]
+ , b =-1.7315 } $\par $\small{\alpha  \approx 4.7\%,\beta  \approx 95 \% ,VA \approx}90.11 \% $ \par 
+ With reference to the values of $\alpha$ and $\beta$, the prediction accuracy is satisfactory.
+           \end{column}
+        \begin{column}{0.4\textwidth}  %%<--- here
+   \begin{figure}
+        \centering
+        \includegraphics[width=4cm]{fig/EAandhyper.eps}
+        \caption{$y_n$ data(case 3)}
+        \includegraphics[width=4cm]{fig/EMandhyper.eps}
+        \caption{ $y_{m}$ data(case 3)}
+        \end{figure}
+        \end{column}
+    \end{columns}    
+\end{frame}
+\begin{frame}{Case study on a numerical example}
+     \metroset{block=fill}
+      \begin{exampleblock}{Data reoptimization}
+	\begin{itemize}
+    \item Cumulative  $T^2$-statistic
+    \item Cumulative  Riemannian metric
+    \end{itemize}
+    \end{exampleblock}
+    \begin{small}
+    \begin{equation}\nonumber
+       \begin{aligned}
+       J_{T_n^2}(j) = \frac{1}{n}\sum_{i}^{i+n-1}J_{T^2}(i) \\
+       J_{R_n}(j) = \frac{1}{n}\sum_{i}^{i+n-1}J_R(i)
+       \end{aligned}
+    \end{equation}
+    \end{small}
+\end{frame}
+\begin{frame}
+\frametitle{Riemannian distance as evaluation function}
+    \textbf{How to get data matrices on Riemannian manifold?}\\
+ Suppose we have a data batch $A \in \mathbb{R}^{M \times N}$, we can get $N-w$ data matrices on the Riemannian manifold by 
+ \begin{equation}
+    \begin{split}
+    \hat{Y_i} &=\frac{1}{w+1} 
+    \begin{bmatrix}
+    A(:,i) & A(:,i+1) & \cdots & A(:,i+w)
+    \end{bmatrix}
+    \begin{bmatrix}
+        A(:,i)^T \\ A(:,i+1)^T \\ \vdots \\ A(:,i+w)^T
+    \end{bmatrix},\\
+    Y_i &= \hat{Y_i}  + diag(0.0001,\cdots, 0.0001), Y_i \in \mathbb{R}^{M \times M} ,\  i = 1,\cdots , N-w.
+ \label{eq:SPD}
+\end{split}
+ \end{equation}
+Then $Y_i$ is symmetric positive definite(SPD).
+
+      \begin{equation}
+              S_i = y_iy_i^T+diag(d_1 \dots d_m)
+    \end{equation}
+\end{frame}
 \end{document}
